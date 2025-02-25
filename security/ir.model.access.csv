@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_gestión_eventos_restaurante_gestión_eventos_restaurante,gestión_eventos_restaurante.gestión_eventos_restaurante,model_gestión_eventos_restaurante_gestión_eventos_restaurante,base.group_user,1,1,1,1
+access_reserva,access.reserva,model_restaurante_reserva,,1,1,1,1
+access_evento,access.evento,model_restaurante_evento,,1,1,1,1
+access_pago,access.pago,model_restaurante_pago,,1,1,1,1

@@ -1,60 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-  <data>
-    <!-- explicit list view definition -->
-<!--
-    <record model="ir.ui.view" id="gestión_eventos_restaurante.list">
-      <field name="name">gestión_eventos_restaurante list</field>
-      <field name="model">gestión_eventos_restaurante.gestión_eventos_restaurante</field>
-      <field name="arch" type="xml">
-        <list>
-          <field name="name"/>
-          <field name="value"/>
-          <field name="value2"/>
-        </list>
-      </field>
-    </record>
--->
+    <!-- Menú principal -->
+    <menuitem id="menu_restaurante_root" name="Gestión de Eventos" sequence="1"/>
 
-    <!-- actions opening views on models -->
-<!--
-    <record model="ir.actions.act_window" id="gestión_eventos_restaurante.action_window">
-      <field name="name">gestión_eventos_restaurante window</field>
-      <field name="res_model">gestión_eventos_restaurante.gestión_eventos_restaurante</field>
-      <field name="view_mode">list,form</field>
-    </record>
--->
+    <!-- Submenús -->
+    <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root"/>
+    <menuitem id="menu_eventos" name="Eventos" parent="menu_restaurante_root"/>
+    <menuitem id="menu_pagos" name="Pagos" parent="menu_restaurante_root"/>
 
-    <!-- server action to the one above -->
-<!--
-    <record model="ir.actions.server" id="gestión_eventos_restaurante.action_server">
-      <field name="name">gestión_eventos_restaurante server</field>
-      <field name="model_id" ref="model_gestión_eventos_restaurante_gestión_eventos_restaurante"/>
-      <field name="state">code</field>
-      <field name="code">
-        action = {
-          "type": "ir.actions.act_window",
-          "view_mode": "list,form",
-          "res_model": model._name,
-        }
-      </field>
+    <!-- Acciones y vistas de Reservas -->
+    <record id="action_reservas" model="ir.actions.act_window">
+        <field name="name">Reservas</field>
+        <field name="res_model">restaurante.reserva</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>
+                Administra las reservas de eventos en el restaurante.
+            </p>
+        </field>
     </record>
--->
 
-    <!-- Top menu item -->
-<!--
-    <menuitem name="gestión_eventos_restaurante" id="gestión_eventos_restaurante.menu_root"/>
--->
-    <!-- menu categories -->
-<!--
-    <menuitem name="Menu 1" id="gestión_eventos_restaurante.menu_1" parent="gestión_eventos_restaurante.menu_root"/>
-    <menuitem name="Menu 2" id="gestión_eventos_restaurante.menu_2" parent="gestión_eventos_restaurante.menu_root"/>
--->
-    <!-- actions -->
-<!--
-    <menuitem name="List" id="gestión_eventos_restaurante.menu_1_list" parent="gestión_eventos_restaurante.menu_1"
-              action="gestión_eventos_restaurante.action_window"/>
-    <menuitem name="Server to list" id="gestión_eventos_restaurante" parent="gestión_eventos_restaurante.menu_2"
-              action="gestión_eventos_restaurante.action_server"/>
--->
-  </data>
+    <menuitem id="menu_action_reservas" name="Administrar Reservas"
+              parent="menu_reservas" action="action_reservas"/>
+
+    <!-- Acciones y vistas de Eventos -->
+    <record id="action_eventos" model="ir.actions.act_window">
+        <field name="name">Eventos</field>
+        <field name="res_model">restaurante.evento</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>
+                Administra los eventos asociados a las reservas.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_action_eventos" name="Administrar Eventos"
+              parent="menu_eventos" action="action_eventos"/>
+
+    <!-- Acciones y vistas de Pagos -->
+    <record id="action_pagos" model="ir.actions.act_window">
+        <field name="name">Pagos</field>
+        <field name="res_model">restaurante.pago</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p>
+                Administra los pagos realizados para las reservas y eventos.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_action_pagos" name="Administrar Pagos"
+              parent="menu_pagos" action="action_pagos"/>
+
+    <!-- Vista de Lista para Reservas -->
+    <record id="view_reserva_list" model="ir.ui.view">
+        <field name="name">restaurante.reserva.list</field>
+        <field name="model">restaurante.reserva</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="fecha_reserva"/>
+                <field name="estado"/>
+                <field name="numero_personas"/>
+                <field name="cliente_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista de Formulario para Reservas -->
+    <record id="view_reserva_form" model="ir.ui.view">
+        <field name="name">restaurante.reserva.form</field>
+        <field name="model">restaurante.reserva</field>
+        <field name="arch" type="xml">
+            <form string="Reserva">
+                <sheet>
+                    <group>
+                        <field name="fecha_reserva"/>
+                        <field name="estado"/>
+                        <field name="numero_personas"/>
+                        <field name="cliente_id"/>
+                        <field name="calendar_event_id"/>
+                        <field name="evento_ids"/>
+                        <field name="pago_ids"/>
+                        <field name="detalles_adicionales"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Vista de Lista para Eventos -->
+    <record id="view_evento_list" model="ir.ui.view">
+        <field name="name">restaurante.evento.list</field>
+        <field name="model">restaurante.evento</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="tipo_evento"/>
+                <field name="personalizacion"/>
+                <field name="reserva_id"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista de Lista para Pagos -->
+    <record id="view_pago_list" model="ir.ui.view">
+        <field name="name">restaurante.pago.list</field>
+        <field name="model">restaurante.pago</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="monto"/>
+                <field name="fecha_pago"/>
+                <field name="metodo_pago"/>
+                <field name="estado_pago"/>
+                <field name="reserva_id"/>
+            </list>
+        </field>
+    </record>
 </odoo>
