@@ -1,0 +1,14 @@
+# Ignorar archivos compilados de Python
+__pycache__/
+*.pyc
+
+# Ignorar archivos de configuración de entorno virtual
+venv/
+.env
+
+# Ignorar archivos de logs y caché
+*.log
+*.cache
+
+# Ignorar la carpeta de dependencias en Odoo (si aplica)
+addons/custom_module/__pycache__/
