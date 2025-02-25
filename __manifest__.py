@@ -31,6 +31,10 @@
         'views/views.xml',
         'views/templates.xml',
     ],
+    'assets': {},
+    'application': True,
+    'installable': True,
+    'icon': '/gestion_eventos_restaurante/static/catering_icono.jpg',
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',
