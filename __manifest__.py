@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
 {
-    'name': "gestión_eventos_restaurante",
+    'name': "gestion_eventos_restaurante",
 
-    'summary': "Short (1 phrase/line) summary of the module's purpose",
+    'summary': "Gestión de eventos",
 
     'description': """
-Long description of module's purpose
+        Este módulo facilita la organización de eventos de principio a fin,
+        ayudando a que todo fluya sin problemas. Desde la gestión de reservas
+        y la personalización de detalles hasta el control de pagos y la logística,
+        permite a los organizadores manejar cada aspecto de la celebración de forma sencilla
+        y eficiente. Así, los clientes pueden disfrutar de su evento sin preocupaciones, y los
+        organizadores tienen todo bajo control sin complicaciones.
     """,
 
     'author': "My Company",
@@ -18,7 +23,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base'],
+    'depends': ['base', 'calendar'],
 
     # always loaded
     'data': [
