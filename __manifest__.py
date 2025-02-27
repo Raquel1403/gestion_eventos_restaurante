@@ -13,7 +13,7 @@
         organizadores tienen todo bajo control sin complicaciones.
     """,
 
-    'author': "My Company",
+    'author': "Fran, Manuel y Raquel",
     'website': "https://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
@@ -29,12 +29,11 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
-        'views/templates.xml',
     ],
     'assets': {},
     'application': True,
     'installable': True,
-    'icon': '/gestion_eventos_restaurante/static/catering_icono.jpg',
+    'icon': '/restaurante/static/catering_icono.jpg',
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

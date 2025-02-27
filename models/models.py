@@ -10,6 +10,13 @@ class ResPartnerEvent(models.Model):
     is_event_customer = fields.Boolean(string="Cliente de Eventos", default=False)
     # Puedes agregar otros campos específicos para clientes de eventos si es necesario.
 
+    # @api.model
+    # def create(self, vals):
+    #     partner = super(ResPartnerEvent, self).create(vals)
+    #     portal_group = self.env.ref('base.group_portal')
+    #     if partner.user_ids:
+    #         partner.user_ids[0].groups_id |= portal_group
+    #     return partner
 # ====================================================
 # Extensión de calendar.event (Calendario de Eventos)
 # ====================================================
@@ -41,9 +48,8 @@ class Reserva(models.Model):
     _name = 'restaurante.reserva'
     _description = 'Reserva para eventos'
 
-    fecha_reserva = fields.Datetime(
+    fecha_reserva = fields.Date(
         string="Fecha de Reserva", 
-        default=fields.Datetime.now, 
         required=True
     )
     estado = fields.Selection([
@@ -51,8 +57,14 @@ class Reserva(models.Model):
         ('confirmado', 'Confirmado'),
         ('cancelado', 'Cancelado')
     ], string="Estado", default='reservado', required=True)
+    color_disponibilidad = fields.Integer(
+        string="Color de Disponibilidad",
+        compute="_compute_color_disponibilidad",
+        store=True
+    )
     numero_personas = fields.Integer(string="Número de Personas", required=True)
     detalles_adicionales = fields.Text(string="Detalles Adicionales")
+    
     
     # Usamos res.partner nativo para los clientes
     cliente_id = fields.Many2one('res.partner', string="Cliente", required=True)
@@ -72,6 +84,16 @@ class Reserva(models.Model):
             if reserva.numero_personas <= 0:
                 raise ValidationError("El número de personas debe ser mayor a cero.")
 
+    @api.depends('fecha_reserva')
+    def _compute_color_disponibilidad(self):
+        reservas = self.env['restaurante.reserva'].search([])
+        fechas_ocupadas = reservas.mapped('fecha_reserva')
+
+        for record in self:
+            if record.fecha_reserva in fechas_ocupadas:
+                record.color_disponibilidad = 1  # Rojo (ocupado)
+            else:
+                record.color_disponibilidad = 10  # Verde (disponible)
 # ====================================================
 # Modelo: Evento (Detalles adicionales del evento)
 # ====================================================
@@ -79,7 +101,12 @@ class Evento(models.Model):
     _name = 'restaurante.evento'
     _description = 'Evento asociado a una reserva'
 
-    tipo_evento = fields.Char(string="Tipo de Evento", required=True)
+    tipo_evento = fields.Selection([
+        ('cumpleaños', 'Cumpleaños'),
+        ('boda', 'Boda'),
+        ('corporativo', 'Corporativo'),
+        ('otro', 'Otro')
+    ], string="Tipo de Evento", required=True)
     personalizacion = fields.Text(string="Personalización del Evento")
     agenda = fields.Text(string="Agenda / Cronograma")
     
