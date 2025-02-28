@@ -87,7 +87,7 @@
 </record>
 
 
-    <!-- Vista de Formulario para Reservas -->
+   <!-- Vista de Formulario para Reservas -->
     <record id="view_reserva_form" model="ir.ui.view">
         <field name="name">restaurante.reserva.form</field>
         <field name="model">restaurante.reserva</field>
@@ -95,63 +95,53 @@
             <form string="Reserva para Eventos">
                 <sheet>
                     <notebook>
-                        <!-- Pestaña de Información General -->
                         <page string="Información General">
                             <group>
-                                <field name="fecha_reserva" widget="date" options="{'color_field': 'color_disponibilidad'}"/>
+                                <field name="fecha_reserva" widget="date"/>
                                 <field name="estado"/>
                                 <field name="numero_personas"/>
                                 <field name="cliente_id"/>
                                 <field name="detalles_adicionales"/>
                             </group>
                         </page>
-
-                        <!-- Pestaña de Eventos -->
                         <page string="Eventos">
+                            <field name="evento_ids">
+                                <list editable="bottom" create="true">
+                                    <field name="tipo_evento"/>
+                                    <field name="personalizacion"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    
+ <!-- Vista de Formulario para Eventos -->
+    <record id="view_evento_form" model="ir.ui.view">
+        <field name="name">restaurante.evento.form</field>
+        <field name="model">restaurante.evento</field>
+        <field name="arch" type="xml">
+            <form string="Evento">
+                <sheet>
+                    <group>
+                        <field name="tipo_evento"/>
+                        <field name="personalizacion"/>
+                        <field name="agenda"/>
+                        <field name="reserva_id"/>
+                    </group>
+                    <notebook>
+                        <page string="Servicios y Personalización">
                             <group>
-                                <field name="evento_ids">
-                                    <list editable="bottom">
-                                        <field name="tipo_evento"/>
-                                        <field name="personalizacion"/>
-                                        <field name="agenda"/>
-                                    </list>
-                                    <form>
-                                        <group>
-                                            <field name="tipo_evento" widget="selection"/>
-                                            <field name="personalizacion"/>
-                                            <field name="agenda"/>
-                                        </group>
-                                    </form>
-                                </field>
+                                <field name="iluminacion_ids" widget="many2many_tags"/>
+                                <field name="musica_ids" widget="many2many_tags"/>
+                                <field name="decoracion_ids" widget="many2many_tags"/>
                             </group>
                         </page>
-
-                        <!-- Pestaña de Pagos -->
-                        <page string="Pagos">
+                        <page string="Presupuesto">
                             <group>
-                                <field name="pago_ids">
-                                    <list editable="bottom">
-                                        <field name="monto"/>
-                                        <field name="fecha_pago"/>
-                                        <field name="metodo_pago"/>
-                                        <field name="estado_pago"/>
-                                    </list>
-                                    <form>
-                                        <group>
-                                            <field name="monto"/>
-                                            <field name="fecha_pago"/>
-                                            <field name="metodo_pago"/>
-                                            <field name="estado_pago"/>
-                                        </group>
-                                    </form>
-                                </field>
-                            </group>
-                        </page>
-
-                        <!-- Pestaña de Evento en Calendario -->
-                        <page string="Evento en Calendario">
-                            <group>
-                                <field name="calendar_event_id"/>
+                                <field name="budget" readonly="1"/>
                             </group>
                         </page>
                     </notebook>
@@ -159,6 +149,19 @@
             </form>
         </field>
     </record>
+
+             <!-- Vista de Lista para Eventos -->
+    <record id="view_evento_list" model="ir.ui.view">
+        <field name="name">restaurante.evento.list</field>
+        <field name="model">restaurante.evento</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="tipo_evento"/>
+                <field name="personalizacion"/>
+                <field name="reserva_id"/>
+            </list>
+        </field>
+    </record>       
 
     <!-- Acción para abrir la vista -->
     <record id="action_reserva" model="ir.actions.act_window">
@@ -228,6 +231,13 @@
                 <field name="reserva_id"/>
             </list>
         </field>
+    </record>
+
+    <!-- Acción y menú para Eventos -->
+    <record id="action_evento" model="ir.actions.act_window">
+        <field name="name">Eventos</field>
+        <field name="res_model">restaurante.evento</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <!-- Vista de Reservas del Cliente -->

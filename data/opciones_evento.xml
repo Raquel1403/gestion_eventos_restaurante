@@ -1,0 +1,31 @@
+<odoo>
+    <!-- Opciones de Iluminación -->
+    <record id="iluminacion_led" model="restaurante.iluminacion">
+        <field name="name">LED</field>
+        <field name="price">10</field>
+    </record>
+    <record id="iluminacion_laser" model="restaurante.iluminacion">
+        <field name="name">Láser</field>
+        <field name="price">20</field>
+    </record>
+
+    <!-- Opciones de Música -->
+    <record id="musica_dj" model="restaurante.musica">
+        <field name="name">DJ</field>
+        <field name="price">50</field>
+    </record>
+    <record id="musica_banda" model="restaurante.musica">
+        <field name="name">Banda en Vivo</field>
+        <field name="price">100</field>
+    </record>
+
+    <!-- Opciones de Decoración -->
+    <record id="decoracion_flores" model="restaurante.decoracion">
+        <field name="name">Flores</field>
+        <field name="price">40</field>
+    </record>
+    <record id="decoracion_globos" model="restaurante.decoracion">
+        <field name="name">Globos</field>
+        <field name="price">30</field>
+    </record>
+</odoo>

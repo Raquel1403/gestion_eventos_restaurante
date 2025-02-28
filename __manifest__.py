@@ -29,6 +29,7 @@
     'data': [
         'security/ir.model.access.csv',
         'views/views.xml',
+        'data/opciones_evento.xml',
     ],
     'assets': {},
     'application': True,

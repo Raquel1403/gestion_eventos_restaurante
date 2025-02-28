@@ -95,7 +95,37 @@ class Reserva(models.Model):
             else:
                 record.color_disponibilidad = 10  # Verde (disponible)
 # ====================================================
-# Modelo: Evento (Detalles adicionales del evento)
+# Modelo: Iluminación (Opciones predefinidas)
+# ====================================================
+class Iluminacion(models.Model):
+    _name = 'restaurante.iluminacion'
+    _description = 'Opciones de Iluminación'
+    
+    name = fields.Char(string="Tipo de Iluminación", required=True)
+    price = fields.Float(string="Precio", required=True, readonly=True)  # Precio fijo
+
+# ====================================================
+# Modelo: Música (Opciones predefinidas)
+# ====================================================
+class Musica(models.Model):
+    _name = 'restaurante.musica'
+    _description = 'Opciones de Música'
+
+    name = fields.Char(string="Tipo de Música", required=True)
+    price = fields.Float(string="Precio", required=True, readonly=True)  # Precio fijo
+
+# ====================================================
+# Modelo: Decoración (Opciones predefinidas)
+# ====================================================
+class Decoracion(models.Model):
+    _name = 'restaurante.decoracion'
+    _description = 'Opciones de Decoración'
+
+    name = fields.Char(string="Tipo de Decoración", required=True)
+    price = fields.Float(string="Precio", required=True, readonly=True)  # Precio fijo
+
+# ====================================================
+# Modelo: Evento (Modificado)
 # ====================================================
 class Evento(models.Model):
     _name = 'restaurante.evento'
@@ -107,17 +137,41 @@ class Evento(models.Model):
         ('corporativo', 'Corporativo'),
         ('otro', 'Otro')
     ], string="Tipo de Evento", required=True)
+    
     personalizacion = fields.Text(string="Personalización del Evento")
     agenda = fields.Text(string="Agenda / Cronograma")
-    
+    # Presupuesto total (suma de precios fijos)
+    budget = fields.Float(string='Presupuesto Estimado', compute='_compute_budget', store=True)
+
+    # Selección de múltiples opciones
+    iluminacion_ids = fields.Many2many('restaurante.iluminacion', string="Iluminación")
+    musica_ids = fields.Many2many('restaurante.musica', string="Música")
+    decoracion_ids = fields.Many2many('restaurante.decoracion', string="Decoración")
+
     # Relación con la reserva
     reserva_id = fields.Many2one('restaurante.reserva', string="Reserva", required=True)
     
     # Relación con servicios y menús
     servicio_menu_ids = fields.One2many('restaurante.servicio_menu', 'evento_id', string="Servicios y Menús")
-    
+
     # Relación con actividades (agenda detallada)
     actividad_ids = fields.One2many('restaurante.actividad', 'evento_id', string="Actividades")
+
+    
+    @api.depends('servicio_menu_ids', 'iluminacion_ids', 'musica_ids', 'decoracion_ids')
+    def _compute_budget(self):
+        """Calcula el presupuesto total del evento sumando:
+           - Servicios y Menús
+           - Iluminación seleccionada (precios fijos)
+           - Música seleccionada (precios fijos)
+           - Decoración seleccionada (precios fijos)
+        """
+        for event in self:
+            total = sum(servicio.precio for servicio in event.servicio_menu_ids)
+            total += sum(iluminacion.price for iluminacion in event.iluminacion_ids)
+            total += sum(musica.price for musica in event.musica_ids)
+            total += sum(decoracion.price for decoracion in event.decoracion_ids)
+            event.budget = total
 
 # ====================================================
 # Modelo: Servicio y Menú
