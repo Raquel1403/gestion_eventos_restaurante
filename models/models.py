@@ -156,7 +156,11 @@ class Evento(models.Model):
 
     # Relación con actividades (agenda detallada)
     actividad_ids = fields.One2many('restaurante.actividad', 'evento_id', string="Actividades")
-
+ # Relación con los platos del menú
+    entrantes_ids = fields.Many2many('restaurante.plato', string="Entrantes", domain=[('tipo_plato', '=', 'entrante')])
+    primer_plato_id = fields.Many2one('restaurante.plato', string="Primer Plato", domain=[('tipo_plato', '=', 'principal')])
+    segundo_plato_id = fields.Many2one('restaurante.plato', string="Segundo Plato", domain=[('tipo_plato', '=', 'principal')])
+    postre_id = fields.Many2one('restaurante.plato', string="Postre", domain=[('tipo_plato', '=', 'postre')])
     
     @api.depends('servicio_menu_ids', 'iluminacion_ids', 'musica_ids', 'decoracion_ids')
     def _compute_budget(self):
@@ -183,13 +187,31 @@ class ServicioMenu(models.Model):
     descripcion_servicio = fields.Text(string="Descripción del Servicio", required=True)
     opcion_menu = fields.Char(string="Opción de Menú", required=True)
     cantidad_calculada = fields.Float(string="Cantidad Calculada")
-    precio = fields.Float(string="Precio", required=True)
+    precio = fields.Float(string="Precio Total", compute='_compute_precio_total', store=True)  # Ahora se calcula automáticamente
     
     # Relación con el evento
     evento_id = fields.Many2one('restaurante.evento', string="Evento", required=True)
     
     # Relación con los platos que componen el menú
     plato_ids = fields.One2many('restaurante.plato', 'servicio_menu_id', string="Platos")
+# Relación con los platos clasificados
+    entrantes_ids = fields.Many2many('restaurante.plato', string="Entrantes", domain=[('tipo_plato', '=', 'entrante')])
+    primer_plato_id = fields.Many2one('restaurante.plato', string="Primer Plato", domain=[('tipo_plato', '=', 'principal')])
+    segundo_plato_id = fields.Many2one('restaurante.plato', string="Segundo Plato", domain=[('tipo_plato', '=', 'secundario')])
+    postre_id = fields.Many2one('restaurante.plato', string="Postre", domain=[('tipo_plato', '=', 'postre')])
+
+    @api.depends('entrantes_ids', 'primer_plato_id', 'segundo_plato_id', 'postre_id')
+    def _compute_precio_total(self):
+        """ Calcula el precio total del menú sumando los precios de los platos seleccionados """
+        for servicio in self:
+            total = sum(servicio.entrantes_ids.mapped('precio'))
+            if servicio.primer_plato_id:
+                total += servicio.primer_plato_id.precio
+            if servicio.segundo_plato_id:
+                total += servicio.segundo_plato_id.precio
+            if servicio.postre_id:
+                total += servicio.postre_id.precio
+            servicio.precio = total
 
 # ====================================================
 # Modelo: Plato
@@ -204,12 +226,15 @@ class Plato(models.Model):
     tipo_plato = fields.Selection([
         ('entrante', 'Entrante'),
         ('principal', 'Plato Principal'),
+        ('secundario', 'Plato Secundario'),
         ('postre', 'Postre'),
         ('bebida', 'Bebida')
     ], string="Tipo de Plato", required=True)
+
+    precio = fields.Float(string="Precio", required=True)  # Ahora cada plato tiene un precio
     
     # Relación con el servicio/menú
-    servicio_menu_id = fields.Many2one('restaurante.servicio_menu', string="Servicio y Menú", required=True)
+    servicio_menu_id = fields.Many2one('restaurante.servicio_menu', string="Servicio y Menú", required=False)
 
 # ====================================================
 # Modelo: Actividad (Agenda Detallada)

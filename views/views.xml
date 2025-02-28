@@ -132,6 +132,23 @@
                         <field name="reserva_id"/>
                     </group>
                     <notebook>
+                    <page string="Menú">
+                            <group>
+                                <!-- Entrantes con checkboxes -->
+                                <field name="entrantes_ids">
+                                    <list>
+                                        <field name="nombre_plato"/>
+                                    </list>
+                                </field>
+                                <field name="primer_plato_id" widget="radio"/>
+                                <field name="segundo_plato_id" widget="radio"/>
+                                <field name="postre_id" widget="radio"/>
+
+                                <group>
+                                <field name="budget" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
                         <page string="Servicios y Personalización">
                             <group>
                                 <field name="iluminacion_ids" widget="many2many_tags"/>
@@ -144,11 +161,18 @@
                                 <field name="budget" readonly="1"/>
                             </group>
                         </page>
+                         
                     </notebook>
                 </sheet>
             </form>
         </field>
     </record>
+     <!-- Modelo para los Menús -->
+    <!-- <record id="model_menu" model="ir.model">
+        <field name="name">restaurante.menu</field>
+        <field name="model">restaurante.menu</field>
+    </record> -->
+
 
              <!-- Vista de Lista para Eventos -->
     <record id="view_evento_list" model="ir.ui.view">
@@ -269,20 +293,5 @@
 </record>
 <menuitem id="menu_action_cliente_pagos" name="Ver Pagos"
           parent="menu_cliente_pagos" action="action_cliente_pagos"/>
-
-
-<!-- <record id="rule_reserva_cliente" model="ir.rule">
-    <field name="name">Acceso a Reservas del Cliente</field>
-    <field name="model_id" ref="model_restaurante_reserva"/>
-    <field name="domain_force">[("cliente_id", "=", user.id)]</field>
-    <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-</record>
-
-<record id="rule_pago_cliente" model="ir.rule">
-    <field name="name">Acceso a Pagos del Cliente</field>
-    <field name="model_id" ref="model_restaurante_pago"/>
-    <field name="domain_force">[("reserva_id.cliente_id", "=", user.id)]</field>
-    <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
-</record> -->
 
 </odoo>

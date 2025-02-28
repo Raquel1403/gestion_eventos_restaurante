@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Entrantes -->
+    <record id="plato_ensalada" model="restaurante.plato">
+        <field name="nombre_plato">Ensalada Mixta</field>
+        <field name="descripcion">Lechuga, tomate, cebolla, aceitunas y aderezo especial.</field>
+        <field name="ingredientes">Lechuga, tomate, cebolla, aceitunas</field>
+        <field name="tipo_plato">entrante</field>
+        <field name="precio">3.0</field>
+    </record>
+
+    <record id="plato_sopa" model="restaurante.plato">
+        <field name="nombre_plato">Sopa de Verduras</field>
+        <field name="descripcion">Caldo de verduras frescas con especias.</field>
+        <field name="ingredientes">Zanahoria, apio, papa, calabacín</field>
+        <field name="tipo_plato">entrante</field>
+        <field name="precio">4.0</field>
+    </record>
+
+    <record id="plato_ensalada_cesar" model="restaurante.plato">
+        <field name="nombre_plato">Ensalada César</field>
+        <field name="descripcion">Lechuga romana, pollo a la parrilla, crutones y aderezo César.</field>
+        <field name="ingredientes">Lechuga, pollo, queso parmesano, crutones</field>
+        <field name="tipo_plato">entrante</field>
+        <field name="precio">4.0</field>
+    </record>
+
+    <record id="plato_gazpacho" model="restaurante.plato">
+        <field name="nombre_plato">Gazpacho Andaluz</field>
+        <field name="descripcion">Sopa fría de tomate con pimiento y pepino.</field>
+        <field name="ingredientes">Tomate, pimiento, pepino, ajo, aceite de oliva</field>
+        <field name="tipo_plato">entrante</field>
+        <field name="precio">3.5</field>
+    </record>
+
+    <record id="plato_bruschetta" model="restaurante.plato">
+        <field name="nombre_plato">Bruschetta de Tomate</field>
+        <field name="descripcion">Pan tostado con tomate, ajo y albahaca.</field>
+        <field name="ingredientes">Pan, tomate, ajo, albahaca</field>
+        <field name="tipo_plato">entrante</field>
+        <field name="precio">3.0</field>
+    </record>
+
+    <!-- Platos Principales -->
+    <record id="plato_pasta" model="restaurante.plato">
+        <field name="nombre_plato">Pasta Alfredo</field>
+        <field name="descripcion">Pasta con salsa Alfredo y queso parmesano.</field>
+        <field name="ingredientes">Pasta, crema, queso parmesano</field>
+        <field name="tipo_plato">principal</field>
+        <field name="precio">8.0</field>
+    </record>
+
+    <record id="plato_asado" model="restaurante.plato">
+        <field name="nombre_plato">Asado de Ternera</field>
+        <field name="descripcion">Ternera asada con guarnición de papas.</field>
+        <field name="ingredientes">Ternera, papa, especias</field>
+        <field name="tipo_plato">principal</field>
+        <field name="precio">12.0</field>
+    </record>
+
+     <record id="plato_paella" model="restaurante.plato">
+        <field name="nombre_plato">Paella de Mariscos</field>
+        <field name="descripcion">Arroz con mariscos frescos y especias tradicionales.</field>
+        <field name="ingredientes">Arroz, camarones, mejillones, calamares</field>
+        <field name="tipo_plato">principal</field>
+        <field name="precio">15.0</field>
+    </record>
+
+    <record id="plato_pollo_asado" model="restaurante.plato">
+        <field name="nombre_plato">Pollo Asado con Papas</field>
+        <field name="descripcion">Pollo al horno con hierbas y papas doradas.</field>
+        <field name="ingredientes">Pollo, papas, romero, ajo</field>
+        <field name="tipo_plato">principal</field>
+        <field name="precio">10.0</field>
+    </record>
+
+    <record id="plato_lasagna" model="restaurante.plato">
+        <field name="nombre_plato">Lasaña de Carne</field>
+        <field name="descripcion">Capas de pasta, carne de res y queso gratinado.</field>
+        <field name="ingredientes">Pasta, carne, salsa de tomate, queso</field>
+        <field name="tipo_plato">principal</field>
+        <field name="precio">12.0</field>
+    </record>
+
+
+    <!-- Platos Secundarios -->
+    <record id="plato_pure" model="restaurante.plato">
+        <field name="nombre_plato">Puré de Papas</field>
+        <field name="descripcion">Puré de papas cremoso con mantequilla.</field>
+        <field name="ingredientes">Papa, mantequilla, leche</field>
+        <field name="tipo_plato">secundario</field>
+        <field name="precio">4.0</field>
+    </record>
+
+    <record id="plato_verduras" model="restaurante.plato">
+        <field name="nombre_plato">Verduras Salteadas</field>
+        <field name="descripcion">Mezcla de verduras salteadas con salsa de soja.</field>
+        <field name="ingredientes">Zanahoria, calabacín, brócoli</field>
+        <field name="tipo_plato">secundario</field>
+        <field name="precio">5.0</field>
+    </record>
+    <record id="plato_arroz_especiado" model="restaurante.plato">
+        <field name="nombre_plato">Arroz Especiado</field>
+        <field name="descripcion">Arroz con cúrcuma y especias aromáticas.</field>
+        <field name="ingredientes">Arroz, cúrcuma, especias</field>
+        <field name="tipo_plato">secundario</field>
+        <field name="precio">3.5</field>
+    </record>
+
+    <record id="plato_pure_calabaza" model="restaurante.plato">
+        <field name="nombre_plato">Puré de Calabaza</field>
+        <field name="descripcion">Puré suave de calabaza con un toque de nuez moscada.</field>
+        <field name="ingredientes">Calabaza, mantequilla, nuez moscada</field>
+        <field name="tipo_plato">secundario</field>
+        <field name="precio">4.5</field>
+    </record>
+
+    <record id="plato_espinacas_salteadas" model="restaurante.plato">
+        <field name="nombre_plato">Espinacas Salteadas</field>
+        <field name="descripcion">Espinacas frescas salteadas con ajo.</field>
+        <field name="ingredientes">Espinacas, ajo, aceite de oliva</field>
+        <field name="tipo_plato">secundario</field>
+        <field name="precio">3.5</field>
+    </record>
+
+    <!-- Postres -->
+    <record id="plato_tarta" model="restaurante.plato">
+        <field name="nombre_plato">Tarta de Queso</field>
+        <field name="descripcion">Tarta de queso con mermelada de fresa.</field>
+        <field name="ingredientes">Queso crema, galleta, fresa</field>
+        <field name="tipo_plato">postre</field>
+        <field name="precio">6.0</field>
+    </record>
+
+    <record id="plato_helado" model="restaurante.plato">
+        <field name="nombre_plato">Helado Artesanal</field>
+        <field name="descripcion">Helado de vainilla con trozos de chocolate.</field>
+        <field name="ingredientes">Leche, vainilla, chocolate</field>
+        <field name="tipo_plato">postre</field>
+        <field name="precio">5.0</field>
+    </record>
+
+    <record id="plato_tiramisu" model="restaurante.plato">
+        <field name="nombre_plato">Tiramisú</field>
+        <field name="descripcion">Postre italiano con capas de bizcocho y crema de mascarpone.</field>
+        <field name="ingredientes">Mascarpone, café, bizcocho, cacao</field>
+        <field name="tipo_plato">postre</field>
+        <field name="precio">6.0</field>
+    </record>
+
+    <record id="plato_flan" model="restaurante.plato">
+        <field name="nombre_plato">Flan de Caramelo</field>
+        <field name="descripcion">Postre de huevo con caramelo casero.</field>
+        <field name="ingredientes">Huevo, leche, azúcar, caramelo</field>
+        <field name="tipo_plato">postre</field>
+        <field name="precio">4.5</field>
+    </record>
+
+    <record id="plato_pastel_chocolate" model="restaurante.plato">
+        <field name="nombre_plato">Pastel de Chocolate</field>
+        <field name="descripcion">Bizcocho de chocolate con ganache de cacao.</field>
+        <field name="ingredientes">Chocolate, harina, azúcar, mantequilla</field>
+        <field name="tipo_plato">postre</field>
+        <field name="precio">5.5</field>
+    </record>
+</odoo>
