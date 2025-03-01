@@ -4,9 +4,9 @@
     <menuitem id="menu_restaurante_root" name="Gestión de Eventos" sequence="1"/>
 
     <!-- Submenús -->
-    <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root"/>
-    <menuitem id="menu_eventos" name="Eventos" parent="menu_restaurante_root"/>
-    <menuitem id="menu_pagos" name="Pagos" parent="menu_restaurante_root"/>
+    <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root" action="action_reservas"/>
+    <menuitem id="menu_eventos" name="Eventos" parent="menu_restaurante_root" action="action_eventos"/>
+    <menuitem id="menu_pagos" name="Pagos" parent="menu_restaurante_root" action="action_pagos"/>
 
     <!--Menú para clientes-->
     <menuitem id="menu_cliente_root" name="Cliente"  parent="menu_restaurante_root"/>
@@ -27,9 +27,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_action_reservas" name="Administrar Reservas"
-              parent="menu_reservas" action="action_reservas"/>
-
     <!-- Acciones y vistas de Eventos -->
     <record id="action_eventos" model="ir.actions.act_window">
         <field name="name">Eventos</field>
@@ -42,9 +39,6 @@
         </field>
     </record>
 
-    <menuitem id="menu_action_eventos" name="Administrar Eventos"
-              parent="menu_eventos" action="action_eventos"/>
-
     <!-- Acciones y vistas de Pagos -->
     <record id="action_pagos" model="ir.actions.act_window">
         <field name="name">Pagos</field>
@@ -56,9 +50,6 @@
             </p>
         </field>
     </record>
-
-    <menuitem id="menu_action_pagos" name="Administrar Pagos"
-              parent="menu_pagos" action="action_pagos"/>
 
     <!-- Vista de Lista para Reservas -->
     <record id="view_reserva_list" model="ir.ui.view">
@@ -98,7 +89,7 @@
                         <page string="Información General">
                             <group>
                                 <field name="fecha_reserva" widget="date"/>
-                                <field name="estado"/>
+                                <field name="tipo_evento"/>
                                 <field name="numero_personas"/>
                                 <field name="cliente_id"/>
                                 <field name="detalles_adicionales"/>
@@ -107,7 +98,7 @@
                         <page string="Eventos">
                             <field name="evento_ids">
                                 <list editable="bottom" create="true">
-                                    <field name="tipo_evento"/>
+                                    <field name="tipo_evento" readonly="1"/>
                                     <field name="personalizacion"/>
                                 </list>
                             </field>
@@ -127,38 +118,68 @@
                 <sheet>
                     <group>
                         <field name="tipo_evento"/>
-                        <field name="personalizacion"/>
-                        <field name="agenda"/>
+                        <!-- <field name="personalizacion"/>
+                        <field name="agenda"/> -->
                         <field name="reserva_id"/>
                     </group>
                     <notebook>
                     <page string="Menú">
                             <group>
-                                <!-- Entrantes con checkboxes -->
+                            <group>
                                 <field name="entrantes_ids">
                                     <list>
                                         <field name="nombre_plato"/>
                                     </list>
                                 </field>
+                                </group>
+                                <group>
                                 <field name="primer_plato_id" widget="radio"/>
                                 <field name="segundo_plato_id" widget="radio"/>
                                 <field name="postre_id" widget="radio"/>
+                                </group>
 
                                 <group>
                                 <field name="budget" readonly="1"/>
                                 </group>
                             </group>
+                             <!-- Segunda columna: Menús especiales -->
+                            <group string="Menús Especiales">
+                                <field name="vegan_menu"/>
+                                <field name="vegetarian_menu"/>
+                                <field name="gluten_free_menu"/>
+                                <field name="lactose_free_menu"/>
+                                <field name="kids_menu"/>
+                                <div class="o_form_label"></div>
+                                <field name="special_menu_total" readonly="1"/>
+                            </group>
                         </page>
                         <page string="Servicios y Personalización">
                             <group>
-                                <field name="iluminacion_ids" widget="many2many_tags"/>
-                                <field name="musica_ids" widget="many2many_tags"/>
-                                <field name="decoracion_ids" widget="many2many_tags"/>
+                                <group string="Iluminación">
+                                    <field name="iluminacion_ids" widget="many2many_checkboxes"/>
+                                </group>
+                                <group string="Música">
+                                    <field name="musica_ids" widget="many2many_checkboxes"/>
+                                </group>
+                                <group string="Decoración">
+                                    <field name="decoracion_ids" widget="many2many_checkboxes"/>
+                                </group>
                             </group>
                         </page>
+
                         <page string="Presupuesto">
                             <group>
                                 <field name="budget" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Actividades">
+                            <group>
+                                <field name="actividad_ids" widget="many2many_tags"/>
+                            </group>
+                        </page>
+                        <page string="Lista invitados">
+                            <group>
+                                   <!--Aqui poner los invitados-->
                             </group>
                         </page>
                          
@@ -167,6 +188,8 @@
             </form>
         </field>
     </record>
+
+    
      <!-- Modelo para los Menús -->
     <!-- <record id="model_menu" model="ir.model">
         <field name="name">restaurante.menu</field>

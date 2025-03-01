@@ -52,6 +52,12 @@ class Reserva(models.Model):
         string="Fecha de Reserva", 
         required=True
     )
+    tipo_evento = fields.Selection([
+        ('cumpleaños', 'Cumpleaños'),
+        ('boda', 'Boda'),
+        ('corporativo', 'Corporativo'),
+        ('otro', 'Otro')
+    ], string="Tipo de Evento", required=True)
     estado = fields.Selection([
         ('reservado', 'Reservado'),
         ('confirmado', 'Confirmado'),
@@ -77,7 +83,7 @@ class Reserva(models.Model):
     
     # Relación con los pagos
     pago_ids = fields.One2many('restaurante.pago', 'reserva_id', string="Pagos")
-    
+
     @api.constrains('numero_personas')
     def _check_numero_personas(self):
         for reserva in self:
@@ -136,12 +142,28 @@ class Evento(models.Model):
         ('boda', 'Boda'),
         ('corporativo', 'Corporativo'),
         ('otro', 'Otro')
-    ], string="Tipo de Evento", required=True)
+    ], string="Tipo de Evento", compute="_compute_tipo_evento", store=True, readonly=True)
+    
+    @api.depends('reserva_id.tipo_evento')
+    def _compute_tipo_evento(self):
+        for rec in self:
+            rec.tipo_evento = rec.reserva_id.tipo_evento if rec.reserva_id else False
+
     
     personalizacion = fields.Text(string="Personalización del Evento")
     agenda = fields.Text(string="Agenda / Cronograma")
     # Presupuesto total (suma de precios fijos)
     budget = fields.Float(string='Presupuesto Estimado', compute='_compute_budget', store=True)
+
+
+    # ==============================
+    # Nuevos campos para Menús Especiales
+    # ==============================
+    vegan_menu = fields.Integer(string="Menú Vegano", default=0)
+    vegetarian_menu = fields.Integer(string="Menú Vegetariano", default=0)
+    gluten_free_menu = fields.Integer(string="Menú Sin Gluten", default=0)
+    lactose_free_menu = fields.Integer(string="Menú Sin Lactosa", default=0)
+    kids_menu = fields.Integer(string="Menú Infantil", default=0)
 
     # Selección de múltiples opciones
     iluminacion_ids = fields.Many2many('restaurante.iluminacion', string="Iluminación")
@@ -156,12 +178,37 @@ class Evento(models.Model):
 
     # Relación con actividades (agenda detallada)
     actividad_ids = fields.One2many('restaurante.actividad', 'evento_id', string="Actividades")
- # Relación con los platos del menú
+    # Relación con los platos del menú
     entrantes_ids = fields.Many2many('restaurante.plato', string="Entrantes", domain=[('tipo_plato', '=', 'entrante')])
     primer_plato_id = fields.Many2one('restaurante.plato', string="Primer Plato", domain=[('tipo_plato', '=', 'principal')])
     segundo_plato_id = fields.Many2one('restaurante.plato', string="Segundo Plato", domain=[('tipo_plato', '=', 'principal')])
     postre_id = fields.Many2one('restaurante.plato', string="Postre", domain=[('tipo_plato', '=', 'postre')])
     
+
+   
+    special_menu_total = fields.Integer(
+        string="Total Menús Especiales", 
+        compute="_compute_special_menu_total", 
+        store=True
+    )
+
+    @api.depends('vegan_menu', 'vegetarian_menu', 'gluten_free_menu', 'lactose_free_menu', 'kids_menu')
+    def _compute_special_menu_total(self):
+        for rec in self:
+            rec.special_menu_total = (
+                rec.vegan_menu +
+                rec.vegetarian_menu +
+                rec.gluten_free_menu +
+                rec.lactose_free_menu +
+                rec.kids_menu
+            )
+
+    @api.constrains('vegan_menu', 'vegetarian_menu', 'gluten_free_menu', 'lactose_free_menu', 'kids_menu')
+    def _check_special_menu_total(self):
+        for rec in self:
+            if rec.reserva_id and rec.special_menu_total > rec.reserva_id.numero_personas:
+                raise ValidationError("La suma de los menús especiales no puede ser mayor que el número de personas en la reserva.")
+
     @api.depends('servicio_menu_ids', 'iluminacion_ids', 'musica_ids', 'decoracion_ids')
     def _compute_budget(self):
         """Calcula el presupuesto total del evento sumando:
@@ -194,7 +241,7 @@ class ServicioMenu(models.Model):
     
     # Relación con los platos que componen el menú
     plato_ids = fields.One2many('restaurante.plato', 'servicio_menu_id', string="Platos")
-# Relación con los platos clasificados
+    # Relación con los platos clasificados
     entrantes_ids = fields.Many2many('restaurante.plato', string="Entrantes", domain=[('tipo_plato', '=', 'entrante')])
     primer_plato_id = fields.Many2one('restaurante.plato', string="Primer Plato", domain=[('tipo_plato', '=', 'principal')])
     segundo_plato_id = fields.Many2one('restaurante.plato', string="Segundo Plato", domain=[('tipo_plato', '=', 'secundario')])
