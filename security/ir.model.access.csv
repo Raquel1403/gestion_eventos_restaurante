@@ -12,3 +12,4 @@ access_restaurante_actividad,access_restaurante_actividad,model_restaurante_acti
 access_restaurante_pago,access_restaurante_pago,model_restaurante_pago,base.group_user,1,1,1,1
 access_restaurante_factura,access_restaurante_factura,model_restaurante_factura,base.group_user,1,1,1,1
 access_restaurante_invitado,Acceso Invitados,model_restaurante_invitado,,1,1,1,1
+access_restaurante_actividad,Acceso Actividades,model_restaurante_actividad,,1,1,1,1

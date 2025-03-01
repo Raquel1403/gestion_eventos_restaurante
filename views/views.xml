@@ -173,9 +173,15 @@
                         </page>
                         <page string="Actividades">
                             <group>
-                                <field name="actividad_ids" widget="many2many_tags"/>
+                                <field name="actividad_ids">
+                                    <list editable="bottom" create="true">
+                                        <field name="nombre_actividad"/>
+                                        <field name="hora_inicio"/>
+                                    </list>
+                                </field>
                             </group>
                         </page>
+
                         <page string="Lista invitados">
                             <group>
                                 <field name="invitado_ids">

@@ -293,12 +293,9 @@ class Actividad(models.Model):
 
     nombre_actividad = fields.Char(string="Nombre de la Actividad", required=True)
     descripcion = fields.Text(string="Descripción")
-    hora_inicio = fields.Float(string="Hora de Inicio", required=True)
-    duracion = fields.Float(string="Duración (horas)", required=True)
-    recursos_asignados = fields.Text(string="Recursos Asignados")
-    
-    # Relación con el evento
-    evento_id = fields.Many2one('restaurante.evento', string="Evento", required=True)
+    hora_inicio = fields.Char(string="Hora de Inicio", required=True)
+
+    evento_id = fields.Many2one('restaurante.evento', string="Evento", required=True, ondelete="cascade")
 
 # ====================================================
 # Modelo: Pago
