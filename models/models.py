@@ -154,7 +154,8 @@ class Evento(models.Model):
     agenda = fields.Text(string="Agenda / Cronograma")
     # Presupuesto total (suma de precios fijos)
     budget = fields.Float(string='Presupuesto Estimado', compute='_compute_budget', store=True)
-
+    # Relación con los invitados
+    invitado_ids = fields.One2many("restaurante.invitado", "evento_id", string="Lista de Invitados")
 
     # ==============================
     # Nuevos campos para Menús Especiales
@@ -344,3 +345,17 @@ class Factura(models.Model):
     
     # Relación con el pago
     pago_id = fields.Many2one('restaurante.pago', string="Pago", required=True)
+
+# ====================================================
+# Modelo: Invitados
+# ====================================================
+
+class RestauranteInvitado(models.Model):
+    _name = "restaurante.invitado"
+    _description = "Invitados del evento"
+
+    nombre = fields.Char(string="Nombre y Apellidos", required=True)
+    telefono = fields.Char(string="Teléfono")
+    confirmado = fields.Boolean(string="Confirmado", default=False)
+    evento_id = fields.Many2one("restaurante.evento", string="Evento", required=True)
+

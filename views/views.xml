@@ -178,9 +178,16 @@
                         </page>
                         <page string="Lista invitados">
                             <group>
-                                   <!--Aqui poner los invitados-->
+                                <field name="invitado_ids">
+                                    <list editable="bottom">
+                                        <field name="nombre"/>
+                                        <field name="telefono"/>
+                                        <field name="confirmado"/>
+                                    </list>
+                                </field>
                             </group>
                         </page>
+
                          
                     </notebook>
                 </sheet>
