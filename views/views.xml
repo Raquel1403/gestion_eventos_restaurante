@@ -4,16 +4,15 @@
     <menuitem id="menu_restaurante_root" name="Gestión de Eventos" sequence="1"/>
 
     <!-- Submenús -->
-    <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root" action="action_reservas"/>
-    <menuitem id="menu_eventos" name="Eventos" parent="menu_restaurante_root" action="action_eventos"/>
-    <menuitem id="menu_pagos" name="Pagos" parent="menu_restaurante_root" action="action_pagos"/>
+    <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root"/>
+    <menuitem id="menu_eventos" name="Eventos" parent="menu_restaurante_root"/>
+    <menuitem id="menu_pagos" name="Pagos" parent="menu_restaurante_root"/>
 
     <!--Menú para clientes-->
     <menuitem id="menu_cliente_root" name="Cliente"  parent="menu_restaurante_root"/>
     <menuitem id="menu_cliente_reservas" name="Mis Reservas" parent="menu_cliente_root"/>
     <menuitem id="menu_cliente_eventos" name="Mis Eventos" parent="menu_cliente_root"/>
     <menuitem id="menu_cliente_pagos" name="Mis Pagos" parent="menu_cliente_root"/>
-
 
     <!-- Acciones y vistas de Reservas -->
     <record id="action_reservas" model="ir.actions.act_window">
@@ -26,7 +25,7 @@
             </p>
         </field>
     </record>
-
+	<menuitem id="menu_action_reservas" name="Administrar Reservas"	parent="menu_reservas" action="action_reservas"/>
     <!-- Acciones y vistas de Eventos -->
     <record id="action_eventos" model="ir.actions.act_window">
         <field name="name">Eventos</field>
@@ -38,7 +37,7 @@
             </p>
         </field>
     </record>
-
+	<menuitem id="menu_action_eventos" name="Administrar Eventos" 	parent="menu_eventos" action="action_eventos"/>
     <!-- Acciones y vistas de Pagos -->
     <record id="action_pagos" model="ir.actions.act_window">
         <field name="name">Pagos</field>
@@ -50,7 +49,7 @@
             </p>
         </field>
     </record>
-
+	 <menuitem id="menu_action_pagos" name="Administrar Pagos"	 parent="menu_pagos" action="action_pagos"/>
     <!-- Vista de Lista para Reservas -->
     <record id="view_reserva_list" model="ir.ui.view">
         <field name="name">restaurante.reserva.list</field>
