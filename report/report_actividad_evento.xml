@@ -1,0 +1,45 @@
+<odoo>
+
+    <record id="actividad_evento_report" model="ir.actions.report">
+        <field name="name">Reporte de Actividades</field>
+        <field name="model">restaurante.evento</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gestion_eventos_restaurante.report_actividad_evento</field>
+    </record>
+   
+
+    <template id="report_actividad_evento" name="gestion_eventos_restaurante.report_actividad_evento">
+    <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="evento">
+            <div class="page">
+                <h2>Agenda del Evento: <t t-esc="evento.tipo_evento"/></h2>
+
+                <t t-if="evento.reserva_id">
+                    <p><strong>Fecha:</strong> <t t-esc="evento.reserva_id.fecha_reserva"/></p>
+                </t>
+                <t t-else="">
+                    <p><strong>Fecha:</strong> No hay reserva asociada</p>
+                </t>
+
+                <div style="position: relative; padding-left: 20px; border-left: 2px solid #000;">
+                    <t t-foreach="evento.actividad_ids" t-as="actividad">
+                        <div style="margin-bottom: 15px; position: relative;">
+                            <!-- Punto en la línea de tiempo -->
+                            <div style="position: absolute; left: -7px; top: 5px; width: 10px; height: 10px; background: black; border-radius: 50%;"></div>
+                            
+                            <!-- Contenido de la actividad -->
+                            <div style="margin-left: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 5px;">
+                                <strong><t t-esc="actividad.nombre_actividad"/></strong><br/>
+                                Hora: <t t-esc="actividad.hora_inicio"/> - <t t-esc="actividad.hora_fin"/><br/>
+                                Sitio: <t t-esc="dict([('salones', 'Salón de Eventos'), ('exterior', 'Exteriores'), ('recepcion', 'Área de Recepción')]).get(actividad.espacio, actividad.espacio)"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </t>
+</template>
+
+
+</odoo>

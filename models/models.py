@@ -1,5 +1,5 @@
 from odoo import models, fields, api # type: ignore
-from odoo.exceptions import ValidationError # type: ignore
+from odoo.exceptions import ValidationError, UserError # type: ignore
 import base64
 import qrcode # type: ignore
 from io import BytesIO
@@ -84,6 +84,8 @@ class Reserva(models.Model):
     # Relación con los pagos
     pago_ids = fields.One2many('restaurante.pago', 'reserva_id', string="Pagos")
 
+    company_id = fields.Many2one('res.company', string="Compañía", default=lambda self: self.env.company)
+    
     @api.constrains('evento_ids')
     def _check_evento_unico(self):
         for reserva in self:
@@ -107,54 +109,48 @@ class Reserva(models.Model):
             else:
                 record.color_disponibilidad = 10  # Verde (disponible)
     
-    def action_mostrar_eventos(self):
-        self.ensure_one()
-        self.write({'mostrar_eventos': True})
-        return {'type': 'ir.actions.client', 'tag': 'reload'}
-    
-    def action_reservar_evento(self):
-        """Acción para reservar el evento (puedes agregar la lógica que necesites)."""
-        self.ensure_one()
-        # Aquí podrías, por ejemplo, actualizar el estado o crear un evento
-        # Actualizamos el estado a 'reservado'
-        self.write({'estado': 'reservado'})
-        return {'type': 'ir.actions.client', 'tag': 'reload'}
+    def action_send_confirmation(self):
+        """Método que se ejecuta al hacer clic en el botón para enviar el correo"""
+        self.ensure_one()  # Asegura que solo se ejecute en un registro
 
-    def action_ver_detalles_evento(self):
-        """Acción para ver los detalles del evento."""
-        self.ensure_one()
-        # Por ejemplo, abrir la vista del evento relacionado
-        if self.evento_ids:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': 'Detalles del Evento',
-                'res_model': 'restaurante.evento',
-                'view_mode': 'form',
-                'res_id': self.evento_ids[0].id,
-                'target': 'current',
+        if not self.email or '@' not in self.email:
+            raise UserError("El correo del cliente no es válido.")
+
+        # Buscar la plantilla de correo
+        template = self.env.ref('gestion_eventos_restaurante.confirmacion_reserva_email_template', raise_if_not_found=False)
+
+        if not template:
+            raise UserError("No se encontró la plantilla de correo.")
+
+        # Enviar correo
+        template.send_mail(self.id, force_send=True)
+        return {
+            'effect': {
+                'fadeout': 'slow',
+                'message': 'Correo de confirmación enviado.',
+                'type': 'rainbow_man',
             }
-        else:
-            return {'type': 'ir.actions.client', 'tag': 'reload'}
+        }
         
-    @api.model
-    def create(self, vals):
-        """Cuando se crea una reserva, se envía un email y un SMS automáticamente."""
-        reserva = super(Reserva, self).create(vals)
+    # @api.model
+    # def create(self, vals):
+    #     """Cuando se crea una reserva, se envía un email y un SMS automáticamente."""
+    #     reserva = super(Reserva, self).create(vals)
 
-        # Enviar email de confirmación
-        template = self.env.ref("gestion_eventos_restaurante.confirmacion_reserva_email_template")
-        if template and reserva.email:
-            template.send_mail(reserva.id, force_send=True)
-            # Mostrar notificación en la interfaz
-            self.env.user.notify_info(message="Notificación de reserva enviada correctamente.", title="Éxito")
+    #     # Enviar email de confirmación
+    #     template = self.env.ref("gestion_eventos_restaurante.confirmacion_reserva_email_template")
+    #     if template and reserva.email:
+    #         template.send_mail(reserva.id, force_send=True)
+    #         # Mostrar notificación en la interfaz
+    #         #self.env.user.notify_info(message="Notificación de reserva enviada correctamente.", title="Éxito")
 
-        # # Enviar SMS de confirmación
-        # if reserva.telefono:
-        #     mensaje = f"Hola {reserva.cliente_id.name}, tu reserva para {reserva.fecha_reserva} ha sido confirmada. ¡Te esperamos!"
-        #     sms_api = SMSAPI(self.env)
-        #     sms_api.send_sms(reserva.telefono, mensaje)
+    #     # # Enviar SMS de confirmación
+    #     # if reserva.telefono:
+    #     #     mensaje = f"Hola {reserva.cliente_id.name}, tu reserva para {reserva.fecha_reserva} ha sido confirmada. ¡Te esperamos!"
+    #     #     sms_api = SMSAPI(self.env)
+    #     #     sms_api.send_sms(reserva.telefono, mensaje)
 
-        return reserva
+    #     return reserva
 
 
 
@@ -306,7 +302,8 @@ class Evento(models.Model):
     def print_evento_report(self):
             return self.env.ref('gestion_eventos_restaurante.action_report_evento').report_action(self)
 
-
+    def action_generate_actividad_report(self):
+        return self.env.ref('gestion_eventos_restaurante.actividad_evento_report').report_action(self)
 
 # ====================================================
 # Modelo: Servicio y Menú
@@ -378,7 +375,6 @@ class Plato(models.Model):
         return result
 
 
-
 # ====================================================
 # Modelo: Actividad (Agenda Detallada)
 # ====================================================
@@ -389,9 +385,21 @@ class Actividad(models.Model):
     nombre_actividad = fields.Char(string="Nombre de la Actividad", required=True)
     descripcion = fields.Text(string="Descripción")
     hora_inicio = fields.Char(string="Hora de Inicio", required=True)
+    hora_fin = fields.Char(string="Hora de Fin", required=True)
 
     evento_id = fields.Many2one('restaurante.evento', string="Evento", required=True, ondelete="cascade")
 
+    espacio = fields.Selection([
+        ('salones', 'Salón de Eventos'),
+        ('exterior', 'Exteriores'),
+        ('recepcion', 'Área de Recepción'),
+    ], string="Espacio del Evento", required=True)
+    
+    @api.constrains('hora_inicio', 'hora_fin')
+    def _check_horario(self):
+        for record in self:
+            if record.hora_inicio >= record.hora_fin:
+                raise ValidationError("La hora de fin debe ser mayor que la hora de inicio.")
 # ====================================================
 # Modelo: Pago
 # ====================================================

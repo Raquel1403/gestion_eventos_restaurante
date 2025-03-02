@@ -34,6 +34,7 @@
         'data/email_templates.xml',
         'report/report_reservas.xml',
         'report/report_evento.xml',
+        'report/report_actividad_evento.xml',
     ],
     'assets': {},
     'application': True,
