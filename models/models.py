@@ -3,6 +3,8 @@ from odoo.exceptions import ValidationError # type: ignore
 import base64
 import qrcode # type: ignore
 from io import BytesIO
+from odoo.addons.sms.models.sms_api import SMSAPI  # type: ignore # Para envío de SMS
+
 
 # ====================================================
 # Extensión de res.partner (clientes)
@@ -78,7 +80,8 @@ class Reserva(models.Model):
     
     # Usamos res.partner nativo para los clientes
     cliente_id = fields.Many2one('res.partner', string="Cliente", required=True)
-    
+    email = fields.Char(related="cliente_id.email", string="Email", readonly=True)
+    telefono = fields.Char(related="cliente_id.phone", string="Teléfono", readonly=True)
     # Vinculación con el calendario extendido (opcional)
     calendar_event_id = fields.Many2one('calendar.event', string="Evento en Calendario")
     
@@ -134,6 +137,24 @@ class Reserva(models.Model):
             }
         else:
             return {'type': 'ir.actions.client', 'tag': 'reload'}
+        
+    @api.model
+    def create(self, vals):
+        """Cuando se crea una reserva, se envía un email y un SMS automáticamente."""
+        reserva = super(Reserva, self).create(vals)
+
+        # Enviar email de confirmación
+        template = self.env.ref("tu_modulo.confirmacion_reserva_email_template")
+        if template and reserva.email:
+            template.send_mail(reserva.id, force_send=True)
+
+        # Enviar SMS de confirmación
+        if reserva.telefono:
+            mensaje = f"Hola {reserva.cliente_id.name}, tu reserva para {reserva.fecha_reserva} ha sido confirmada. ¡Te esperamos!"
+            sms_api = SMSAPI(self.env)
+            sms_api.send_sms(reserva.telefono, mensaje)
+
+        return reserva
 
 
 
