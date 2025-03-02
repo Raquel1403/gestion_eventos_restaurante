@@ -210,20 +210,45 @@ class Evento(models.Model):
             if rec.reserva_id and rec.special_menu_total > rec.reserva_id.numero_personas:
                 raise ValidationError("La suma de los menús especiales no puede ser mayor que el número de personas en la reserva.")
 
-    @api.depends('servicio_menu_ids', 'iluminacion_ids', 'musica_ids', 'decoracion_ids')
+    @api.depends('servicio_menu_ids', 'iluminacion_ids', 'musica_ids', 'decoracion_ids',
+             'entrantes_ids', 'primer_plato_id', 'segundo_plato_id', 'postre_id', 
+             'reserva_id.numero_personas', 'vegan_menu', 'vegetarian_menu', 'gluten_free_menu', 'lactose_free_menu', 'kids_menu')
     def _compute_budget(self):
-        """Calcula el presupuesto total del evento sumando:
-           - Servicios y Menús
-           - Iluminación seleccionada (precios fijos)
-           - Música seleccionada (precios fijos)
-           - Decoración seleccionada (precios fijos)
+        """Calcula el presupuesto total del evento incluyendo:
+        - Servicios y Menús
+        - Iluminación, Música y Decoración
+        - Entrantes ajustados por número de personas
+        - Platos principales multiplicados por invitados menos menús especiales
         """
         for event in self:
             total = sum(servicio.precio for servicio in event.servicio_menu_ids)
             total += sum(iluminacion.price for iluminacion in event.iluminacion_ids)
             total += sum(musica.price for musica in event.musica_ids)
             total += sum(decoracion.price for decoracion in event.decoracion_ids)
+
+            # Calcular costo de entrantes por número de personas ajustado
+            if event.reserva_id and event.entrantes_ids:
+                num_personas = event.reserva_id.numero_personas
+                num_entrantes = len(event.entrantes_ids)
+
+                if num_entrantes > 0:
+                    total += sum((entrante.precio * num_personas) / num_entrantes for entrante in event.entrantes_ids)
+
+            # Calcular costo de platos principales ajustados por menús especiales
+            num_menus_especiales = event.vegan_menu + event.vegetarian_menu + event.gluten_free_menu + event.lactose_free_menu + event.kids_menu
+            personas_restantes = max(event.reserva_id.numero_personas - num_menus_especiales, 0)  # Evita números negativos
+
+            if event.primer_plato_id:
+                total += event.primer_plato_id.precio * personas_restantes
+            if event.segundo_plato_id:
+                total += event.segundo_plato_id.precio * personas_restantes
+            if event.postre_id:
+                total += event.postre_id.precio * personas_restantes
+
             event.budget = total
+
+
+
 
 # ====================================================
 # Modelo: Servicio y Menú
@@ -267,6 +292,7 @@ class ServicioMenu(models.Model):
 class Plato(models.Model):
     _name = 'restaurante.plato'
     _description = 'Plato perteneciente a un Servicio y Menú'
+    _rec_name = 'nombre_plato'
 
     nombre_plato = fields.Char(string="Nombre del Plato", required=True)
     descripcion = fields.Text(string="Descripción")
@@ -283,6 +309,17 @@ class Plato(models.Model):
     
     # Relación con el servicio/menú
     servicio_menu_id = fields.Many2one('restaurante.servicio_menu', string="Servicio y Menú", required=False)
+
+    def name_get(self):
+        """Muestra el nombre del plato en la selección en lugar del ID."""
+        result = []
+        for record in self:
+            name = f"{record.nombre_plato} - ${record.precio}"
+            print(f"DEBUG: name_get() ejecutado para {record.id} → {name}")  # <--- Depuración
+            result.append((record.id, name))
+        return result
+
+
 
 # ====================================================
 # Modelo: Actividad (Agenda Detallada)

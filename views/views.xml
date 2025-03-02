@@ -131,11 +131,14 @@
                                     </list>
                                 </field>
                                 </group>
-                                <group>
-                                <field name="primer_plato_id" widget="radio"/>
-                                <field name="segundo_plato_id" widget="radio"/>
-                                <field name="postre_id" widget="radio"/>
+                               <group>
+                                    <field name="primer_plato_id" widget="radio"/>
+                                    <field name="segundo_plato_id" widget="radio"/>
+                                    <field name="postre_id" widget="radio"/>
                                 </group>
+
+
+
 
                                 <group>
                                 <field name="budget" readonly="1"/>
@@ -291,6 +294,30 @@
             </list>
         </field>
     </record>
+
+    <record id="view_plato_search" model="ir.ui.view">
+        <field name="name">restaurante.plato.search</field>
+        <field name="model">restaurante.plato</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="nombre_plato"/>
+                <field name="tipo_plato"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_plato_list" model="ir.ui.view">
+        <field name="name">restaurante.plato.list</field>
+        <field name="model">restaurante.plato</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="nombre_plato"/>
+                <field name="precio"/>
+            </list>
+        </field>
+    </record>
+
+
 
     <!-- Acción y menú para Eventos -->
     <record id="action_evento" model="ir.actions.act_window">
