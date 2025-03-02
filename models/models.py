@@ -3,7 +3,7 @@ from odoo.exceptions import ValidationError # type: ignore
 import base64
 import qrcode # type: ignore
 from io import BytesIO
-from odoo.addons.sms.models.sms_api import SMSAPI  # type: ignore # Para envío de SMS
+#from odoo.addons.sms.models.sms_api import SMSAPI  # type: ignore # Para envío de SMS
 
 
 # ====================================================
@@ -15,13 +15,6 @@ class ResPartnerEvent(models.Model):
     is_event_customer = fields.Boolean(string="Cliente de Eventos", default=False)
     # Puedes agregar otros campos específicos para clientes de eventos si es necesario.
 
-    # @api.model
-    # def create(self, vals):
-    #     partner = super(ResPartnerEvent, self).create(vals)
-    #     portal_group = self.env.ref('base.group_portal')
-    #     if partner.user_ids:
-    #         partner.user_ids[0].groups_id |= portal_group
-    #     return partner
 # ====================================================
 # Extensión de calendar.event (Calendario de Eventos)
 # ====================================================
@@ -91,6 +84,11 @@ class Reserva(models.Model):
     # Relación con los pagos
     pago_ids = fields.One2many('restaurante.pago', 'reserva_id', string="Pagos")
 
+    @api.constrains('evento_ids')
+    def _check_evento_unico(self):
+        for reserva in self:
+            if len(reserva.evento_ids) > 1:
+                raise ValidationError("Solo se permite un evento por reserva.")
 
     @api.constrains('numero_personas')
     def _check_numero_personas(self):
@@ -144,15 +142,17 @@ class Reserva(models.Model):
         reserva = super(Reserva, self).create(vals)
 
         # Enviar email de confirmación
-        template = self.env.ref("tu_modulo.confirmacion_reserva_email_template")
+        template = self.env.ref("gestion_eventos_restaurante.confirmacion_reserva_email_template")
         if template and reserva.email:
             template.send_mail(reserva.id, force_send=True)
+            # Mostrar notificación en la interfaz
+            self.env.user.notify_info(message="Notificación de reserva enviada correctamente.", title="Éxito")
 
-        # Enviar SMS de confirmación
-        if reserva.telefono:
-            mensaje = f"Hola {reserva.cliente_id.name}, tu reserva para {reserva.fecha_reserva} ha sido confirmada. ¡Te esperamos!"
-            sms_api = SMSAPI(self.env)
-            sms_api.send_sms(reserva.telefono, mensaje)
+        # # Enviar SMS de confirmación
+        # if reserva.telefono:
+        #     mensaje = f"Hola {reserva.cliente_id.name}, tu reserva para {reserva.fecha_reserva} ha sido confirmada. ¡Te esperamos!"
+        #     sms_api = SMSAPI(self.env)
+        #     sms_api.send_sms(reserva.telefono, mensaje)
 
         return reserva
 
@@ -208,7 +208,7 @@ class Evento(models.Model):
             rec.tipo_evento = rec.reserva_id.tipo_evento if rec.reserva_id else False
 
     
-    personalizacion = fields.Text(string="Personalización del Evento")
+    # personalizacion = fields.Text(string="Personalización del Evento")
     agenda = fields.Text(string="Agenda / Cronograma")
     # Presupuesto total (suma de precios fijos)
     budget = fields.Float(string='Presupuesto Estimado', compute='_compute_budget', store=True)
@@ -243,8 +243,6 @@ class Evento(models.Model):
     segundo_plato_id = fields.Many2one('restaurante.plato', string="Segundo Plato", domain=[('tipo_plato', '=', 'principal')])
     postre_id = fields.Many2one('restaurante.plato', string="Postre", domain=[('tipo_plato', '=', 'postre')])
     
-
-   
     special_menu_total = fields.Integer(
         string="Total Menús Especiales", 
         compute="_compute_special_menu_total", 
