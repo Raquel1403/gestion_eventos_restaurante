@@ -1,0 +1,194 @@
+<odoo>
+
+    <record id="action_report_evento" model="ir.actions.report">
+        <field name="name">Informe del Evento</field>
+        <field name="model">restaurante.evento</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gestion_eventos_restaurante.report_evento_template</field>
+    </record>
+
+    <template id="report_evento_template" name="gestion_eventos_restaurante.report_evento_template">
+        <t t-call="web.basic_layout">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <h2>Detalles del Evento</h2>
+
+                    <h3>Información General</h3>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Tipo de Evento</th>
+                            <td>
+                                <span t-field="doc.tipo_evento" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Reserva</th>
+                            <td>
+                                <t t-if="doc.reserva_id">
+                                    <span t-field="doc.reserva_id" />
+                                </t>
+                                <t t-else="-" />
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h3>Menú</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Entrantes</th>
+                                <th>Primer Plato</th>
+                                <th>Segundo Plato</th>
+                                <th>Postre</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <t t-foreach="doc.entrantes_ids" t-as="entrante">
+                                        <span t-field="entrante.nombre_plato" />
+                                        <br />
+                                    </t>
+                                </td>
+                                <td>
+                                    <span t-field="doc.primer_plato_id.nombre_plato" />
+                                </td>
+                                <td>
+                                    <span t-field="doc.segundo_plato_id.nombre_plato" />
+                                </td>
+                                <td>
+                                    <span t-field="doc.postre_id.nombre_plato" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h3>Menús Especiales</h3>
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>Vegano:</td>
+                            <td>
+                                <span t-field="doc.vegan_menu" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Vegetariano:</td>
+                            <td>
+                                <span t-field="doc.vegetarian_menu" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Sin Gluten:</td>
+                            <td>
+                                <span t-field="doc.gluten_free_menu" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Sin Lactosa:</td>
+                            <td>
+                                <span t-field="doc.lactose_free_menu" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Menú Infantil:</td>
+                            <td>
+                                <span t-field="doc.kids_menu" />
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h3>Servicios y Personalización</h3>
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>Iluminación</th>
+                            <td>
+                                <t t-foreach="doc.iluminacion_ids" t-as="iluminacion">
+                                    <span t-field="iluminacion.name" />
+                                    <br />
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Música</th>
+                            <td>
+                                <t t-foreach="doc.musica_ids" t-as="musica">
+                                    <span t-field="musica.name" />
+                                    <br />
+                                </t>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Decoración</th>
+                            <td>
+                                <t t-foreach="doc.decoracion_ids" t-as="decoracion">
+                                    <span t-field="decoracion.name" />
+                                    <br />
+                                </t>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <h3>Actividades</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Hora Inicio</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.actividad_ids" t-as="actividad">
+                                <tr>
+                                    <td>
+                                        <span t-field="actividad.nombre_actividad" />
+                                    </td>
+                                    <td>
+                                        <span t-field="actividad.hora_inicio" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <h3>Lista de Invitados</h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Teléfono</th>
+                                <th>Confirmado</th>
+                                <th>QR</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="doc.invitado_ids" t-as="invitado">
+                                <tr>
+                                    <td>
+                                        <span t-field="invitado.nombre" />
+                                    </td>
+                                    <td>
+                                        <span t-field="invitado.telefono" />
+                                    </td>
+                                    <td>
+                                        <span t-field="invitado.confirmado" />
+                                    </td>
+                                    <td>
+                                        <img t-if="invitado.qr_code" t-att-src="invitado.qr_code" />
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+
+                    <h3>Presupuesto Total</h3>
+                    <p>
+                        <strong><span t-field="doc.budget" /> €</strong>
+                    </p>
+
+                </div>
+            </t>
+        </t>
+    </template>
+
+
+</odoo>

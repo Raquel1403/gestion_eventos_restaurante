@@ -79,34 +79,43 @@
 
    <!-- Vista de Formulario para Reservas -->
     <record id="view_reserva_form" model="ir.ui.view">
-        <field name="name">restaurante.reserva.form</field>
-        <field name="model">restaurante.reserva</field>
-        <field name="arch" type="xml">
-            <form string="Reserva para Eventos">
-                <sheet>
-                    <notebook>
-                        <page string="Información General">
-                            <group>
-                                <field name="fecha_reserva" widget="date"/>
-                                <field name="tipo_evento"/>
-                                <field name="numero_personas"/>
-                                <field name="cliente_id"/>
-                                <field name="detalles_adicionales"/>
-                            </group>
-                        </page>
-                        <page string="Eventos">
-                            <field name="evento_ids">
-                                <list editable="bottom" create="true">
-                                    <field name="tipo_evento" readonly="1"/>
-                                    <field name="personalizacion"/>
-                                </list>
-                            </field>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-    </record>
+    <field name="name">restaurante.reserva.form</field>
+    <field name="model">restaurante.reserva</field>
+    <field name="arch" type="xml">
+        <form string="Reserva">
+        <header>
+                    <button name="%(action_report_reservas)d" string="Imprimir Informe Todas Reservas" type="action" class="oe_highlight"/>
+                </header>
+            <sheet>
+            <group>
+                <field name="mostrar_eventos" invisible="1"/>
+            </group>
+            <notebook>
+             <page string="Información General">
+                <group>
+                    <field name="fecha_reserva"/>
+                    <field name="tipo_evento"/>
+                    <field name="numero_personas"/>
+                    <field name="cliente_id"/>
+                    <field name="detalles_adicionales"/>
+                    <button name="action_mostrar_eventos" type="object"
+                        string="Reservar Evento" class="oe_highlight"/>
+                </group>
+            </page>    
+
+                    <!-- Página Eventos, visible solo si mostrar_eventos es True -->
+                    <page string="Eventos" invisible="[('mostrar_eventos', '=', [False])]">
+                        <group>
+                            <field name="evento_ids"/>
+                        </group>
+                    </page>
+            </notebook>
+            
+            </sheet>
+        </form>
+    </field>
+</record>
+
     
  <!-- Vista de Formulario para Eventos -->
     <record id="view_evento_form" model="ir.ui.view">
@@ -114,6 +123,10 @@
         <field name="model">restaurante.evento</field>
         <field name="arch" type="xml">
             <form string="Evento">
+            <header>
+    <button name="print_evento_report" type="object" string="Imprimir Informe" class="btn-primary"/>
+</header>
+
                 <sheet>
                     <group>
                         <field name="tipo_evento"/>

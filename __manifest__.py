@@ -31,6 +31,8 @@
         'views/views.xml',
         'data/opciones_evento.xml',
         'data/platos_data.xml',
+        'report/report_reservas.xml',
+        'report/report_evento.xml',
     ],
     'assets': {},
     'application': True,

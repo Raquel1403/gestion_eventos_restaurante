@@ -1,0 +1,53 @@
+<odoo>
+    <!-- Acción del Reporte -->
+    <record id="action_report_reservas" model="ir.actions.report">
+        <field name="name">Informe de Reservas</field>
+        <field name="model">restaurante.reserva</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">gestion_eventos_restaurante.report_reservas_all_template</field>
+    </record>
+
+    <!-- Plantilla QWeb para el informe -->
+    <template id="report_reservas_all_template" name="gestion_eventos_restaurante.report_reservas_all_template">
+    <t t-call="web.basic_layout">
+        <div class="page">
+            <h2>Informe de Reservas</h2>
+            <!-- Se realiza una búsqueda de todas las reservas -->
+            <t t-set="reservas" t-value="env['restaurante.reserva'].search([])"/>
+            <table class="table table-bordered" style="width: 100%; margin-top: 20px;">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Fecha Reserva</th>
+                        <th>Tipo de Evento</th>
+                        <th>Número de Personas</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-foreach="reservas" t-as="reserva">
+                        <tr>
+                            <td>
+                                <span t-field="reserva.cliente_id.name"/>
+                            </td>
+                            <td>
+                                <span t-field="reserva.fecha_reserva"/>
+                            </td>
+                            <td>
+                                <span t-field="reserva.tipo_evento"/>
+                            </td>
+                            <td>
+                                <span t-field="reserva.numero_personas"/>
+                            </td>
+                            <td>
+                                <span t-field="reserva.estado"/>
+                            </td>
+                        </tr>
+                    </t>
+                </tbody>
+            </table>
+        </div>
+    </t>
+</template>
+
+</odoo>

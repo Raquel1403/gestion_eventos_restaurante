@@ -1,7 +1,7 @@
 from odoo import models, fields, api # type: ignore
 from odoo.exceptions import ValidationError # type: ignore
 import base64
-import qrcode
+import qrcode # type: ignore
 from io import BytesIO
 
 # ====================================================
@@ -73,7 +73,8 @@ class Reserva(models.Model):
     )
     numero_personas = fields.Integer(string="Número de Personas", required=True)
     detalles_adicionales = fields.Text(string="Detalles Adicionales")
-    
+     # Nuevo campo para controlar la visibilidad de la pestaña "Eventos"
+    mostrar_eventos = fields.Boolean(string="Mostrar Eventos", default=False)
     
     # Usamos res.partner nativo para los clientes
     cliente_id = fields.Many2one('res.partner', string="Cliente", required=True)
@@ -86,6 +87,7 @@ class Reserva(models.Model):
     
     # Relación con los pagos
     pago_ids = fields.One2many('restaurante.pago', 'reserva_id', string="Pagos")
+
 
     @api.constrains('numero_personas')
     def _check_numero_personas(self):
@@ -103,6 +105,38 @@ class Reserva(models.Model):
                 record.color_disponibilidad = 1  # Rojo (ocupado)
             else:
                 record.color_disponibilidad = 10  # Verde (disponible)
+    
+    def action_mostrar_eventos(self):
+        self.ensure_one()
+        self.write({'mostrar_eventos': True})
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
+    
+    def action_reservar_evento(self):
+        """Acción para reservar el evento (puedes agregar la lógica que necesites)."""
+        self.ensure_one()
+        # Aquí podrías, por ejemplo, actualizar el estado o crear un evento
+        # Actualizamos el estado a 'reservado'
+        self.write({'estado': 'reservado'})
+        return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+    def action_ver_detalles_evento(self):
+        """Acción para ver los detalles del evento."""
+        self.ensure_one()
+        # Por ejemplo, abrir la vista del evento relacionado
+        if self.evento_ids:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': 'Detalles del Evento',
+                'res_model': 'restaurante.evento',
+                'view_mode': 'form',
+                'res_id': self.evento_ids[0].id,
+                'target': 'current',
+            }
+        else:
+            return {'type': 'ir.actions.client', 'tag': 'reload'}
+
+
+
 # ====================================================
 # Modelo: Iluminación (Opciones predefinidas)
 # ====================================================
@@ -250,6 +284,8 @@ class Evento(models.Model):
 
             event.budget = total
 
+    def print_evento_report(self):
+            return self.env.ref('gestion_eventos_restaurante.action_report_evento').report_action(self)
 
 
 
