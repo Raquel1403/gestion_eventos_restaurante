@@ -1,5 +1,8 @@
 from odoo import models, fields, api # type: ignore
 from odoo.exceptions import ValidationError # type: ignore
+import base64
+import qrcode
+from io import BytesIO
 
 # ====================================================
 # Extensión de res.partner (clientes)
@@ -392,4 +395,18 @@ class RestauranteInvitado(models.Model):
     telefono = fields.Char(string="Teléfono")
     confirmado = fields.Boolean(string="Confirmado", default=False)
     evento_id = fields.Many2one("restaurante.evento", string="Evento", required=True)
+    qr_code = fields.Binary(string="Código QR", compute="_generate_qr", store=True)
 
+    @api.depends("nombre", "evento_id")
+    def _generate_qr(self):
+        for record in self:
+            if record.nombre and record.evento_id:
+                qr_data = f"Invitado: {record.nombre}\nEvento: {record.evento_id.id}\nTeléfono: {record.telefono}"
+                qr = qrcode.QRCode(version=1, box_size=10, border=5)
+                qr.add_data(qr_data)
+                qr.make(fit=True)
+                
+                img = qr.make_image(fill="black", back_color="white")
+                temp = BytesIO()
+                img.save(temp, format="PNG")
+                record.qr_code = base64.b64encode(temp.getvalue())

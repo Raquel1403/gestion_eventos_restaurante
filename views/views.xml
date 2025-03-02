@@ -192,6 +192,7 @@
                                         <field name="nombre"/>
                                         <field name="telefono"/>
                                         <field name="confirmado"/>
+                                        <field name="qr_code" widget="image"/>
                                     </list>
                                 </field>
                             </group>
@@ -265,6 +266,7 @@
         </kanban>
     </field>
 </record>
+
 
 
     <!-- Vista de Lista para Eventos -->
