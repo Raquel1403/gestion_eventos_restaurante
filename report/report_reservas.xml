@@ -1,4 +1,5 @@
 <odoo>
+    <!-- Informe para ver todas las reservas del sistema -->
     <!-- Acción del Reporte -->
     <record id="action_report_reservas" model="ir.actions.report">
         <field name="name">Informe de Reservas</field>

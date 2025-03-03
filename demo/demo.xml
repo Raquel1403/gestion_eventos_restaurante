@@ -1,30 +1,190 @@
 <odoo>
-    <data>
-<!--
-          <record id="object0" model="gestión_eventos_restaurante.gestión_eventos_restaurante">
-            <field name="name">Object 0</field>
-            <field name="value">0</field>
-          </record>
+    <data noupdate="0"> <!-- noupdate="0" permite que los datos se actualicen al reinstalar el módulo -->
 
-          <record id="object1" model="gestión_eventos_restaurante.gestión_eventos_restaurante">
-            <field name="name">Object 1</field>
-            <field name="value">10</field>
-          </record>
+        <!-- 1. Clientes (res.partner) -->
+        <record id="cliente_1" model="res.partner">
+            <field name="name">Juan Pérez</field>
+            <field name="email">juan.perez@example.com</field>
+            <field name="phone">+34 600 123 456</field>
+            <field name="is_event_customer">True</field>
+        </record>
 
-          <record id="object2" model="gestión_eventos_restaurante.gestión_eventos_restaurante">
-            <field name="name">Object 2</field>
-            <field name="value">20</field>
-          </record>
+        <record id="cliente_2" model="res.partner">
+            <field name="name">María López</field>
+            <field name="email">maria.lopez@example.com</field>
+            <field name="phone">+34 600 789 123</field>
+            <field name="is_event_customer">True</field>
+        </record>
 
-          <record id="object3" model="gestión_eventos_restaurante.gestión_eventos_restaurante">
-            <field name="name">Object 3</field>
-            <field name="value">30</field>
-          </record>
+        <!-- 2. Platos (restaurante.plato) -->
+        <record id="plato_entrante_1" model="restaurante.plato">
+            <field name="nombre_plato">Ensalada Caprese</field>
+            <field name="descripcion">Ensalada fresca con tomate, mozzarella y albahaca</field>
+            <field name="ingredientes">Tomate, mozzarella, albahaca, aceite de oliva</field>
+            <field name="tipo_plato">entrante</field>
+            <field name="precio">8.50</field>
+        </record>
 
-          <record id="object4" model="gestión_eventos_restaurante.gestión_eventos_restaurante">
-            <field name="name">Object 4</field>
-            <field name="value">40</field>
-          </record>
--->
+        <record id="plato_principal_1" model="restaurante.plato">
+            <field name="nombre_plato">Solomillo a la Pimienta</field>
+            <field name="descripcion">Solomillo de ternera con salsa de pimienta</field>
+            <field name="ingredientes">Solomillo, pimienta, nata, brandy</field>
+            <field name="tipo_plato">principal</field>
+            <field name="precio">18.00</field>
+        </record>
+
+        <record id="plato_secundario_1" model="restaurante.plato">
+            <field name="nombre_plato">Patatas Asadas</field>
+            <field name="descripcion">Patatas asadas con hierbas</field>
+            <field name="ingredientes">Patatas, romero, aceite de oliva</field>
+            <field name="tipo_plato">secundario</field>
+            <field name="precio">5.00</field>
+        </record>
+
+        <record id="plato_postre_1" model="restaurante.plato">
+            <field name="nombre_plato">Tarta de Chocolate</field>
+            <field name="descripcion">Tarta de chocolate con crema</field>
+            <field name="ingredientes">Chocolate, harina, azúcar, crema</field>
+            <field name="tipo_plato">postre</field>
+            <field name="precio">6.00</field>
+        </record>
+
+        <!-- 3. Servicios (restaurante.servicio) -->
+        <record id="servicio_1" model="restaurante.servicio">
+            <field name="name">Iluminación Ambiental</field>
+            <field name="tipo">iluminacion</field>
+            <field name="price">150.00</field>
+        </record>
+
+        <record id="servicio_2" model="restaurante.servicio">
+            <field name="name">Música en Vivo</field>
+            <field name="tipo">musica</field>
+            <field name="price">300.00</field>
+        </record>
+
+        <!-- 4. Reservas (restaurante.reserva) -->
+        <record id="reserva_1" model="restaurante.reserva">
+            <field name="fecha_reserva">2025-03-15</field>
+            <field name="tipo_evento">cumpleaños</field>
+            <field name="estado">confirmado</field>
+            <field name="lugar">Salón Principal</field>
+            <field name="numero_personas">20</field>
+            <field name="cliente_id" ref="cliente_1"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <record id="reserva_2" model="restaurante.reserva">
+            <field name="fecha_reserva">2025-04-01</field>
+            <field name="tipo_evento">boda</field>
+            <field name="estado">reservado</field>
+            <field name="lugar">Jardín Exterior</field>
+            <field name="numero_personas">50</field>
+            <field name="cliente_id" ref="cliente_2"/>
+            <field name="company_id" ref="base.main_company"/>
+        </record>
+
+        <!-- 5. Eventos (restaurante.evento) -->
+        <record id="evento_1" model="restaurante.evento">
+            <field name="reserva_id" ref="reserva_1"/>
+            <field name="vegan_menu">2</field>
+            <field name="vegetarian_menu">3</field>
+            <field name="kids_menu">5</field>
+            <field name="servicio_ids" eval="[(6, 0, [ref('servicio_1'), ref('servicio_2')])]"/>
+            <field name="entrantes_ids" eval="[(6, 0, [ref('plato_entrante_1')])]"/>
+            <field name="primer_plato_id" ref="plato_principal_1"/>
+            <field name="segundo_plato_id" ref="plato_secundario_1"/>
+            <field name="postre_id" ref="plato_postre_1"/>
+        </record>
+
+        <record id="evento_2" model="restaurante.evento">
+            <field name="reserva_id" ref="reserva_2"/>
+            <field name="vegan_menu">5</field>
+            <field name="gluten_free_menu">4</field>
+            <field name="servicio_ids" eval="[(6, 0, [ref('servicio_2')])]"/>
+            <field name="entrantes_ids" eval="[(6, 0, [ref('plato_entrante_1')])]"/>
+            <field name="primer_plato_id" ref="plato_principal_1"/>
+            <field name="postre_id" ref="plato_postre_1"/>
+        </record>
+
+        <!-- 6. Servicio y Menú (restaurante.servicio_menu) -->
+        <record id="servicio_menu_1" model="restaurante.servicio_menu">
+            <field name="descripcion_servicio">Menú completo para cumpleaños</field>
+            <field name="opcion_menu">Menú Clásico</field>
+            <field name="cantidad_calculada">20.0</field>
+            <field name="evento_id" ref="evento_1"/>
+            <field name="entrantes_ids" eval="[(6, 0, [ref('plato_entrante_1')])]"/>
+            <field name="primer_plato_id" ref="plato_principal_1"/>
+            <field name="postre_id" ref="plato_postre_1"/>
+        </record>
+
+        <!-- 7. Actividades (restaurante.actividad) -->
+        <record id="actividad_1" model="restaurante.actividad">
+            <field name="nombre_actividad">Corte de Tarta</field>
+            <field name="descripcion">Ceremonia de corte de tarta de cumpleaños</field>
+            <field name="hora_inicio">18:00</field>
+            <field name="hora_fin">18:30</field>
+            <field name="evento_id" ref="evento_1"/>
+            <field name="espacio">salones</field>
+        </record>
+
+        <record id="actividad_2" model="restaurante.actividad">
+            <field name="nombre_actividad">Baile de Apertura</field>
+            <field name="descripcion">Primer baile de los novios</field>
+            <field name="hora_inicio">20:00</field>
+            <field name="hora_fin">20:15</field>
+            <field name="evento_id" ref="evento_2"/>
+            <field name="espacio">exterior</field>
+        </record>
+
+        <!-- 8. Pagos (restaurante.pago) -->
+        <record id="pago_1" model="restaurante.pago">
+            <field name="monto">500.00</field>
+            <field name="fecha_pago">2025-03-10</field>
+            <field name="metodo_pago">tarjeta</field>
+            <field name="estado_pago">completado</field>
+            <field name="reserva_id" ref="reserva_1"/>
+        </record>
+
+        <record id="pago_2" model="restaurante.pago">
+            <field name="monto">1000.00</field>
+            <field name="fecha_pago">2025-03-20</field>
+            <field name="metodo_pago">transferencia</field>
+            <field name="estado_pago">pendiente</field>
+            <field name="reserva_id" ref="reserva_2"/>
+        </record>
+
+        <!-- 9. Facturas (restaurante.factura) -->
+        <record id="factura_1" model="restaurante.factura">
+            <field name="numero_factura">FACT-00001</field>
+            <field name="fecha_emision">2025-03-10</field>
+            <field name="total">500.00</field>
+            <field name="pago_id" ref="pago_1"/>
+        </record>
+
+        <!-- 10. Invitados (restaurante.invitado) -->
+        <record id="invitado_1" model="restaurante.invitado">
+            <field name="nombre">Ana Gómez</field>
+            <field name="telefono">+34 600 456 789</field>
+            <field name="confirmado">True</field>
+            <field name="evento_id" ref="evento_1"/>
+        </record>
+
+        <record id="invitado_2" model="restaurante.invitado">
+            <field name="nombre">Carlos Ruiz</field>
+            <field name="telefono">+34 600 987 654</field>
+            <field name="confirmado">False</field>
+            <field name="evento_id" ref="evento_2"/>
+        </record>
+
+        <!-- 11. Eventos del Calendario (calendar.event) -->
+        <record id="calendar_event_1" model="calendar.event">
+            <field name="name">Cumpleaños de Juan Pérez</field>
+            <field name="start">2025-03-15 17:00:00</field>
+            <field name="stop">2025-03-15 22:00:00</field>
+            <field name="reserva_id" ref="reserva_1"/>
+            <field name="tipo_celebracion">cumpleaños</field>
+            <field name="numero_personas">20</field>
+        </record>
+
     </data>
 </odoo>

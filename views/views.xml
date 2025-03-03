@@ -1,20 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <!-- Menú principal -->
-    <menuitem id="menu_restaurante_root" name="Gestión de Eventos" sequence="1" />
-    <menuitem id="calendario_root" name="Calendario" parent="menu_restaurante_root" action="action_reserva_calendar"/>
-
-    <!-- Submenús -->
-    <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root" action="action_reservas"/>
-    <!-- <menuitem id="menu_eventos" name="Eventos" parent="menu_restaurante_root" />
-    <menuitem id="menu_pagos" name="Pagos" parent="menu_restaurante_root" /> -->
-
-    <!--Menú
-    para clientes-->
-    <!-- <menuitem id="menu_cliente_root" name="Cliente" parent="menu_restaurante_root" />
-    <menuitem id="menu_cliente_reservas" name="Mis Reservas" parent="menu_cliente_root" />
-    <menuitem id="menu_cliente_eventos" name="Mis Eventos" parent="menu_cliente_root" />
-    <menuitem id="menu_cliente_pagos" name="Mis Pagos" parent="menu_cliente_root" /> -->
+  
+   
 
     <!-- Acciones y vistas de Reservas -->
     <record id="action_reservas" model="ir.actions.act_window">
@@ -27,8 +14,7 @@
             </p>
         </field>
     </record>
-    <!-- <menuitem id="menu_action_reservas" name="Administrar Reservas" parent="menu_reservas"
-        action="action_reservas" /> -->
+    
 
     <!-- Acciones y vistas de Eventos -->
     <record id="action_eventos" model="ir.actions.act_window">
@@ -41,8 +27,7 @@
             </p>
         </field>
     </record>
-    <!-- <menuitem id="menu_action_eventos" name="Administrar Eventos" parent="menu_eventos"
-        action="action_eventos" /> -->
+    
     <!-- Acciones y vistas de Pagos -->
     <record id="action_pagos" model="ir.actions.act_window">
         <field name="name">Pagos</field>
@@ -54,8 +39,7 @@
             </p>
         </field>
     </record>
-    <!-- <menuitem id="menu_action_pagos" name="Administrar Pagos" parent="menu_pagos"
-        action="action_pagos" /> -->
+    
     <!-- Vista de Lista para Reservas -->
     <record id="view_reserva_list" model="ir.ui.view">
         <field name="name">restaurante.reserva.list</field>
@@ -71,6 +55,7 @@
         </field>
     </record>
 
+    <!-- Vista para ver el calendario-->
     <record id="view_reserva_calendar" model="ir.ui.view">
         <field name="name">restaurante.reserva.calendar</field>
         <field name="model">restaurante.reserva</field>
@@ -94,10 +79,8 @@
                      <button name="action_generate_report_reservas" string="Imprimir Informe Todas Reservas" type="object" class="oe_highlight"/>
                 </header>
                 <sheet>
-                    <group>
-                        <field name="mostrar_eventos" invisible="1" />
-                    </group>
                     <notebook>
+                    <!-- Pagina con la informacion general de la reserva-->
                         <page string="Información General">
                             <group>
                                 <field name="fecha_reserva"/>
@@ -110,13 +93,14 @@
                             </group>
                         </page>
 
-                        <!-- Página Eventos, visible solo si mostrar_eventos es True -->
+                        <!-- Página Eventos -->
                         <page string="Eventos">
                             <group>
                             <field name="evento_ids" mode="list" ref="view_evento_list"/>
                         </group>
                         </page>
 
+                        <!-- Página Pagos -->
                         <page string="Pagos">
                             <group>
                                 <field name="pago_ids" mode="list" ref="view_pago_list" />
@@ -132,6 +116,7 @@
         </field>
     </record>
 
+    <!-- Vista formulario de pago -->
     <record id="view_pago_form" model="ir.ui.view">
         <field name="name">restaurante.pago.form</field>
         <field name="model">restaurante.pago</field>
@@ -155,6 +140,7 @@
         </field>
     </record>
 
+    <!-- Vista lista de eventos -->
     <record id="view_evento_list" model="ir.ui.view">
         <field name="name">restaurante.evento.list</field>
         <field name="model">restaurante.evento</field>
@@ -185,19 +171,16 @@
                 <header>
                     <button name="print_evento_report" type="object" string="Imprimir Informe"
                         class="btn-primary" />
-                    <!-- <button name="ir.actions.report(actividad_evento_report)" string="Imprimir Actividades" type="action" 
-                            class="oe_highlight"/> -->
                     <button name="action_generate_actividad_report" string="Imprimir Actividades" type="object" class="oe_highlight"/>
                 </header>
 
                 <sheet>
                     <group>
                         <field name="tipo_evento" />
-                        <!-- <field name="personalizacion"/>
-                        <field name="agenda"/> -->
                         <field name="reserva_id" />
                     </group>
                     <notebook>
+                    <!-- Pagina para editar los menús del evento-->
                         <page string="Menú">
                             <group>
                                 <group>
@@ -229,6 +212,8 @@
                                 <field name="special_menu_total" readonly="1" />
                             </group>
                         </page>
+
+                        <!-- Pagina para mostrar los servicios adicionales del evento-->
                         <page string="Servicios y Personalización">
                             <group>
                                 <group string="Iluminación">
@@ -242,12 +227,13 @@
                                 </group>
                             </group>
                         </page>
-
+                        <!-- Pagina para mostrar el presupuesto del evento-->
                         <page string="Presupuesto">
                             <group>
                                 <field name="budget" readonly="1" />
                             </group>
                         </page>
+                        <!-- Pagina para poder hacer el cronograma del evento-->
                         <page string="Actividades">
                             <group>
                                 <field name="actividad_ids">
@@ -260,7 +246,7 @@
                                 </field>
                             </group>
                         </page>
-
+                        <!-- Pagina para hacer la lista de invitados-->
                         <page string="Lista invitados">
                             <group>
                                 <field name="invitado_ids">
@@ -373,6 +359,7 @@
         </field>
     </record>
 
+    <!-- mostrar los nombres de los entrantes al añadir-->
     <record id="view_plato_search" model="ir.ui.view">
         <field name="name">restaurante.plato.search</field>
         <field name="model">restaurante.plato</field>
@@ -384,6 +371,7 @@
         </field>
     </record>
 
+    <!-- Vista de Lista para los entrantes añadidos -->
     <record id="view_plato_list" model="ir.ui.view">
         <field name="name">restaurante.plato.list</field>
         <field name="model">restaurante.plato</field>
@@ -403,34 +391,13 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <!-- Vista de Reservas del Cliente -->
-    <!-- <record id="action_cliente_reservas" model="ir.actions.act_window">
-        <field name="name">Mis Reservas</field>
-        <field name="res_model">restaurante.reserva</field>
-        <field name="view_mode">kanban,list,form</field>
-        <field name="domain">[("cliente_id", "=", uid)]</field>
-    </record>
-    <menuitem id="menu_action_cliente_reservas" name="Ver Reservas"
-        parent="menu_cliente_reservas" action="action_cliente_reservas" /> -->
+    <!-- Menú principal -->
+    <menuitem id="menu_restaurante_root" name="Gestión de Eventos" sequence="1" />
+    
 
-    <!-- Vista de Eventos del Cliente -->
-    <!-- <record id="action_cliente_eventos" model="ir.actions.act_window">
-        <field name="name">Mis Eventos</field>
-        <field name="res_model">restaurante.evento</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[("reserva_id.cliente_id", "=", uid)]</field>
-    </record>
-    <menuitem id="menu_action_cliente_eventos" name="Ver Eventos"
-        parent="menu_cliente_eventos" action="action_cliente_eventos" /> -->
+    <!-- Submenús -->
+    <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root" action="action_reservas"/>
+    <menuitem id="calendario_root" name="Calendario" parent="menu_restaurante_root" action="action_reserva_calendar"/>
 
-    <!-- Vista de Pagos del Cliente -->
-    <!-- <record id="action_cliente_pagos" model="ir.actions.act_window">
-        <field name="name">Mis Pagos</field>
-        <field name="res_model">restaurante.pago</field>
-        <field name="view_mode">list,form</field>
-        <field name="domain">[("reserva_id.cliente_id", "=", uid)]</field>
-    </record> -->
-    <!-- <menuitem id="menu_action_cliente_pagos" name="Ver Pagos"
-        parent="menu_cliente_pagos" action="action_cliente_pagos" /> -->
 
 </odoo>

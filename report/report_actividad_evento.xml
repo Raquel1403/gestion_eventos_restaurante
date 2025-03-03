@@ -1,5 +1,5 @@
 <odoo>
-
+    <!-- Informe para ver el cronograma del evento-->
     <record id="actividad_evento_report" model="ir.actions.report">
         <field name="name">Reporte de Actividades</field>
         <field name="model">restaurante.evento</field>

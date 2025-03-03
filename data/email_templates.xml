@@ -1,4 +1,5 @@
 <odoo>
+    <!-- Plantilla para generar los email de confirmacion-->
     <data>
         <record id="confirmacion_reserva_email_template" model="mail.template">
             <field name="name">Confirmación de Reserva</field>

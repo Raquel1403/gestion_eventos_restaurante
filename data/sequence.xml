@@ -1,4 +1,5 @@
 <odoo>
+    <!-- Indica como empieza la secuencia al generar la factura-->
     <data noupdate="1">
         <record id="seq_factura" model="ir.sequence">
             <field name="name">Secuencia de Facturas</field>

@@ -1,4 +1,5 @@
 <odoo>
+    <!-- Informe para ver el pago seleccionado solo si esta pagado-->
     <data>
         <record id="action_report_factura" model="ir.actions.report">
             <field name="name">Factura</field>

@@ -1,5 +1,5 @@
 <odoo>
-
+    <!-- Informe para ver el evento seleccionado-->
     <record id="action_report_evento" model="ir.actions.report">
         <field name="name">Informe del Evento</field>
         <field name="model">restaurante.evento</field>
