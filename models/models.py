@@ -438,6 +438,12 @@ class Pago(models.Model):
     numero_factura = fields.Char(string="Número de Factura", readonly=True)
     factura_generada = fields.Boolean(string="Factura Generada", default=False)
 
+    saldo_pendiente = fields.Float(
+        string="Saldo Pendiente",
+        compute="_compute_saldo_pendiente",
+        store=True
+    )
+
     def action_generar_imprimir_factura(self):
         self.ensure_one()
 
@@ -458,6 +464,23 @@ class Pago(models.Model):
 
         # Generar el informe PDF sobre `Pago`
         return self.env.ref('gestion_eventos_restaurante.action_report_factura').report_action(self)
+    
+    @api.depends('reserva_id', 'reserva_id.evento_ids', 'estado_pago', 'monto')
+    def _compute_saldo_pendiente(self):
+        """Calcula el saldo pendiente como: Presupuesto - Suma de pagos completados"""
+        for pago in self:
+            if pago.reserva_id:
+                # Tomar el presupuesto total del evento
+                presupuesto_total = sum(pago.reserva_id.evento_ids.mapped('budget'))
+
+                # Sumar todos los pagos completados de la reserva
+                total_pagado = sum(self.env['restaurante.pago'].search([
+                    ('reserva_id', '=', pago.reserva_id.id),
+                    ('estado_pago', '=', 'completado')
+                ]).mapped('monto'))
+
+                # Calcular saldo pendiente
+                pago.saldo_pendiente = max(presupuesto_total - total_pagado, 0)
 
 # ====================================================
 # Modelo: Factura
