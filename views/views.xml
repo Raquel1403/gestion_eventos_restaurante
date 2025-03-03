@@ -121,6 +121,9 @@
                             <group>
                                 <field name="pago_ids" mode="list" ref="view_pago_list" />
                             </group>
+                            <group string="Saldo Pendiente">
+                                <field name="saldo_pendiente" readonly="1"/>
+                            </group>
                         </page>
                     </notebook>
 
@@ -146,7 +149,6 @@
                         <field name="estado_pago"/>
                         <field name="reserva_id"/>
                         <field name="numero_factura" readonly="1"/>
-                        <field name="saldo_pendiente" readonly="1"/>
                     </group>
                 </sheet>
             </form>
@@ -366,7 +368,6 @@
                 <field name="metodo_pago" />
                 <field name="estado_pago" />
                 <field name="reserva_id" />
-                <field name="saldo_pendiente" readonly="1"/>
             </list>
             
         </field>

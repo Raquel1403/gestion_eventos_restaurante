@@ -66,6 +66,13 @@ class Reserva(models.Model):
         compute="_compute_color_disponibilidad",
         store=True
     )
+    saldo_pendiente = fields.Float(
+        string="Saldo Pendiente",
+        compute="_compute_saldo_pendiente",
+        store=True
+    )
+
+   
     lugar = fields.Char(string="Lugar", required=True)
     numero_personas = fields.Integer(string="Número de Personas", required=True)
     detalles_adicionales = fields.Text(string="Detalles Adicionales")
@@ -157,7 +164,23 @@ class Reserva(models.Model):
             'target': 'new',
         }
 
-        
+
+    @api.depends('pago_ids', 'evento_ids.budget')
+    def _compute_saldo_pendiente(self):
+        """Calcula el saldo pendiente restando los pagos completados al presupuesto estimado"""
+        for reserva in self:
+            presupuesto = sum(reserva.evento_ids.mapped('budget'))  # Obtiene el presupuesto total del evento
+            total_pagado = sum(p.monto for p in reserva.pago_ids if p.estado_pago == 'completado')
+            reserva.saldo_pendiente = max(presupuesto - total_pagado, 0)
+
+    @api.constrains('monto', 'reserva_id')
+    def _check_pago_no_supera_saldo(self):
+        """Evita que se registre un pago que supere el saldo pendiente de la reserva"""
+        for pago in self:
+            if pago.reserva_id:
+                saldo_pendiente = pago.reserva_id.saldo_pendiente
+                if pago.monto > saldo_pendiente:
+                    raise ValidationError(f"El monto del pago ({pago.monto}) no puede superar el saldo pendiente ({saldo_pendiente}).")
     # @api.model
     # def create(self, vals):
     #     """Cuando se crea una reserva, se envía un email y un SMS automáticamente."""
@@ -438,11 +461,20 @@ class Pago(models.Model):
     numero_factura = fields.Char(string="Número de Factura", readonly=True)
     factura_generada = fields.Boolean(string="Factura Generada", default=False)
 
-    saldo_pendiente = fields.Float(
-        string="Saldo Pendiente",
-        compute="_compute_saldo_pendiente",
-        store=True
-    )
+    @api.constrains('monto', 'reserva_id')
+    def _check_pago_no_supera_presupuesto(self):
+        """Evita que la suma total de los pagos supere el presupuesto total del evento"""
+        for pago in self:
+            if pago.reserva_id:
+                total_pagado = sum(pago.reserva_id.pago_ids.mapped('monto'))
+                presupuesto = sum(pago.reserva_id.evento_ids.mapped('budget'))
+
+                if total_pagado > presupuesto:
+                    raise ValidationError(
+                        f"La suma total de los pagos ({total_pagado}) no puede superar el presupuesto total ({presupuesto})."
+                    )
+
+    
 
     def action_generar_imprimir_factura(self):
         self.ensure_one()
@@ -465,22 +497,7 @@ class Pago(models.Model):
         # Generar el informe PDF sobre `Pago`
         return self.env.ref('gestion_eventos_restaurante.action_report_factura').report_action(self)
     
-    @api.depends('reserva_id', 'reserva_id.evento_ids', 'estado_pago', 'monto')
-    def _compute_saldo_pendiente(self):
-        """Calcula el saldo pendiente como: Presupuesto - Suma de pagos completados"""
-        for pago in self:
-            if pago.reserva_id:
-                # Tomar el presupuesto total del evento
-                presupuesto_total = sum(pago.reserva_id.evento_ids.mapped('budget'))
-
-                # Sumar todos los pagos completados de la reserva
-                total_pagado = sum(self.env['restaurante.pago'].search([
-                    ('reserva_id', '=', pago.reserva_id.id),
-                    ('estado_pago', '=', 'completado')
-                ]).mapped('monto'))
-
-                # Calcular saldo pendiente
-                pago.saldo_pendiente = max(presupuesto_total - total_pagado, 0)
+   
 
 # ====================================================
 # Modelo: Factura
