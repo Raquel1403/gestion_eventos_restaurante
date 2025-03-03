@@ -89,8 +89,7 @@
         <field name="arch" type="xml">
             <form string="Reserva">
                 <header>
-                    <button name="%(action_report_reservas)d"
-                        string="Imprimir Informe Todas Reservas" type="action" class="oe_highlight" />
+                     <button name="action_generate_report_reservas" string="Imprimir Informe Todas Reservas" type="object" class="oe_highlight"/>
                 </header>
                 <sheet>
                     <group>

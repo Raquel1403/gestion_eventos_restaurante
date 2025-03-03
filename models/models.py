@@ -85,6 +85,9 @@ class Reserva(models.Model):
     pago_ids = fields.One2many('restaurante.pago', 'reserva_id', string="Pagos")
 
     company_id = fields.Many2one('res.company', string="Compañía", default=lambda self: self.env.company)
+
+    def action_generate_report_reservas(self):
+        return self.env.ref('gestion_eventos_restaurante.action_report_reservas').report_action(self)
     
     @api.constrains('evento_ids')
     def _check_evento_unico(self):
