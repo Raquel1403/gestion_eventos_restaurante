@@ -66,6 +66,7 @@
                 <field name="estado" />
                 <field name="numero_personas" />
                 <field name="cliente_id" />
+                <field name="lugar" />
             </list>
         </field>
     </record>
@@ -103,7 +104,7 @@
                                 <field name="tipo_evento" />
                                 <field name="numero_personas" />
                                 <field name="cliente_id" />
-                                <field name="detalles_adicionales" />
+                                <field name="lugar" />
                                 <button name="action_send_confirmation" type="object"
                                     string="Reservar Evento" class="oe_highlight" />
                             </group>
@@ -123,6 +124,29 @@
                         </page>
                     </notebook>
 
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_pago_form" model="ir.ui.view">
+        <field name="name">restaurante.pago.form</field>
+        <field name="model">restaurante.pago</field>
+        <field name="arch" type="xml">
+            <form string="Pago">
+                <header>
+                    <button name="action_generar_imprimir_factura" type="object"
+                            string="Generar/Imprimir Factura" class="oe_highlight"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="monto"/>
+                        <field name="fecha_pago"/>
+                        <field name="metodo_pago"/>
+                        <field name="estado_pago"/>
+                        <field name="reserva_id"/>
+                        <field name="numero_factura" readonly="1"/>
+                    </group>
                 </sheet>
             </form>
         </field>
@@ -205,13 +229,13 @@
                         <page string="Servicios y Personalización">
                             <group>
                                 <group string="Iluminación">
-                                    <field name="iluminacion_ids" widget="many2many_checkboxes" />
+                                    <field name="servicio_ids" widget="many2many_checkboxes" domain="[('tipo', '=', 'iluminacion')]" />
                                 </group>
                                 <group string="Música">
-                                    <field name="musica_ids" widget="many2many_checkboxes" />
+                                    <field name="servicio_ids" widget="many2many_checkboxes" domain="[('tipo', '=', 'musica')]" />
                                 </group>
                                 <group string="Decoración">
-                                    <field name="decoracion_ids" widget="many2many_checkboxes" />
+                                    <field name="servicio_ids" widget="many2many_checkboxes" domain="[('tipo', '=', 'decoracion')]" />
                                 </group>
                             </group>
                         </page>
@@ -305,6 +329,10 @@
                             <div>
                                 <span>Personas:</span>
                                 <field name="numero_personas" />
+                            </div>
+                            <div>
+                                <span>Lugar:</span>
+                                <field name="lugar" />
                             </div>
                         </div>
                     </t>

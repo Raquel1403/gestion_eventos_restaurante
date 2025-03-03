@@ -1,31 +1,35 @@
 <odoo>
-    <!-- Opciones de Iluminación -->
-    <record id="iluminacion_led" model="restaurante.iluminacion">
+    <!-- Servicios -->
+    <record id="servicio_led" model="restaurante.servicio">
         <field name="name">LED</field>
+        <field name="tipo">iluminacion</field>
         <field name="price">10</field>
     </record>
-    <record id="iluminacion_laser" model="restaurante.iluminacion">
+    <record id="servicio_laser" model="restaurante.servicio">
         <field name="name">Láser</field>
+        <field name="tipo">iluminacion</field>
         <field name="price">20</field>
     </record>
 
-    <!-- Opciones de Música -->
-    <record id="musica_dj" model="restaurante.musica">
+    <record id="servicio_dj" model="restaurante.servicio">
         <field name="name">DJ</field>
+        <field name="tipo">musica</field>
         <field name="price">50</field>
     </record>
-    <record id="musica_banda" model="restaurante.musica">
+    <record id="servicio_banda" model="restaurante.servicio">
         <field name="name">Banda en Vivo</field>
+        <field name="tipo">musica</field>
         <field name="price">100</field>
     </record>
 
-    <!-- Opciones de Decoración -->
-    <record id="decoracion_flores" model="restaurante.decoracion">
+    <record id="servicio_flores" model="restaurante.servicio">
         <field name="name">Flores</field>
+        <field name="tipo">decoracion</field>
         <field name="price">40</field>
     </record>
-    <record id="decoracion_globos" model="restaurante.decoracion">
+    <record id="servicio_globos" model="restaurante.servicio">
         <field name="name">Globos</field>
+        <field name="tipo">decoracion</field>
         <field name="price">30</field>
     </record>
 </odoo>

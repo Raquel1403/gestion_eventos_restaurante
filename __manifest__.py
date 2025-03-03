@@ -32,6 +32,8 @@
         'data/opciones_evento.xml',
         'data/platos_data.xml',
         'data/email_templates.xml',
+        'data/sequence.xml',
+        'report/report_factura.xml',
         'report/report_reservas.xml',
         'report/report_evento.xml',
         'report/report_actividad_evento.xml',

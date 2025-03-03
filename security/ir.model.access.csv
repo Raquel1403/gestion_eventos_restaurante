@@ -2,9 +2,6 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_res_partner_event,access_res_partner_event,model_res_partner,base.group_user,1,0,0,0
 access_calendar_event_extended,access_calendar_event_extended,model_calendar_event,base.group_user,1,1,1,0
 access_restaurante_reserva,access_restaurante_reserva,model_restaurante_reserva,base.group_user,1,1,1,1
-access_restaurante_iluminacion,access_restaurante_iluminacion,model_restaurante_iluminacion,base.group_user,1,1,1,1
-access_restaurante_musica,access_restaurante_musica,model_restaurante_musica,base.group_user,1,1,1,1
-access_restaurante_decoracion,access_restaurante_decoracion,model_restaurante_decoracion,base.group_user,1,1,1,1
 access_restaurante_evento,access_restaurante_evento,model_restaurante_evento,base.group_user,1,1,1,1
 access_restaurante_servicio_menu,access_restaurante_servicio_menu,model_restaurante_servicio_menu,base.group_user,1,1,1,1
 access_restaurante_plato,access_restaurante_plato,model_restaurante_plato,base.group_user,1,1,1,1
@@ -13,3 +10,4 @@ access_restaurante_pago,access_restaurante_pago,model_restaurante_pago,base.grou
 access_restaurante_factura,access_restaurante_factura,model_restaurante_factura,base.group_user,1,1,1,1
 access_restaurante_invitado,Acceso Invitados,model_restaurante_invitado,base.group_user,1,1,1,1
 access_restaurante_actividad,Acceso Actividades,model_restaurante_actividad,,1,1,1,1
+access_restaurante_servicio,access_restaurante_servicio,model_restaurante_servicio,,1,1,1,1

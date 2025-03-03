@@ -1,0 +1,62 @@
+<odoo>
+    <data>
+        <record id="action_report_factura" model="ir.actions.report">
+            <field name="name">Factura</field>
+            <field name="model">restaurante.pago</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">gestion_eventos_restaurante.factura_report_template</field>
+        </record>
+
+        <template id="factura_report_template">
+            <t t-call="web.external_layout">
+                <t t-foreach="docs" t-as="doc">
+                    <main>
+                        <div class="page">
+                            <!-- ENCABEZADO -->
+                            <div style="text-align: center; padding-bottom: 20px;">
+                                <img src="/gestion_eventos_restaurante/static/catering_incono.jpg" alt="Logo" style="max-width: 150px;"/>
+                                <h2 style="margin-top: 10px; font-size: 24px; color: #4A4A4A;">Factura</h2>
+                            </div>
+
+                            <!-- INFORMACIÓN GENERAL -->
+                            <div style="margin-bottom: 20px;">
+                                <p><strong>Número de Factura:</strong> <t t-esc="doc.numero_factura"/></p>
+                                <p><strong>Fecha de Facturación:</strong> <t t-esc="doc.fecha_pago"/></p>
+                            </div>
+
+                            <!-- DATOS DEL CLIENTE -->
+                            <div style="border-bottom: 2px solid #ddd; padding-bottom: 10px; margin-bottom: 15px;">
+                                <p><strong>Cliente:</strong> <t t-esc="doc.reserva_id.cliente_id.name"/></p>
+                                <p><strong>Correo:</strong> <t t-esc="doc.reserva_id.cliente_id.email or 'No disponible'"/></p>
+                                <p><strong>Teléfono:</strong> <t t-esc="doc.reserva_id.cliente_id.phone or 'No disponible'"/></p>
+                            </div>
+
+                            <!-- TABLA DE DETALLES DEL PAGO -->
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                                <thead>
+                                    <tr style="background-color: #f4f4f4;">
+                                        <th style="padding: 8px; border: 1px solid #ddd;">Concepto</th>
+                                        <th style="padding: 8px; border: 1px solid #ddd;">Monto</th>
+                                        <th style="padding: 8px; border: 1px solid #ddd;">Método de Pago</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #ddd;">Pago por Reserva de Evento</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd; text-align: right;"><t t-esc="doc.monto"/> €</td>
+                                        <td style="padding: 8px; border: 1px solid #ddd;"><t t-esc="doc.metodo_pago"/></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <!-- MENSAJE FINAL -->
+                            <p style="text-align: center; font-style: italic; color: #555;">
+                                Gracias por su pago. ¡Esperamos verle pronto!
+                            </p>
+                        </div>
+                    </main>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

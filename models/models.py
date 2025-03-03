@@ -66,6 +66,7 @@ class Reserva(models.Model):
         compute="_compute_color_disponibilidad",
         store=True
     )
+    lugar = fields.Char(string="Lugar", required=True)
     numero_personas = fields.Integer(string="Número de Personas", required=True)
     detalles_adicionales = fields.Text(string="Detalles Adicionales")
      # Nuevo campo para controlar la visibilidad de la pestaña "Eventos"
@@ -179,35 +180,6 @@ class Reserva(models.Model):
 
 
 
-# ====================================================
-# Modelo: Iluminación (Opciones predefinidas)
-# ====================================================
-class Iluminacion(models.Model):
-    _name = 'restaurante.iluminacion'
-    _description = 'Opciones de Iluminación'
-    
-    name = fields.Char(string="Tipo de Iluminación", required=True)
-    price = fields.Float(string="Precio", required=True, readonly=True)  # Precio fijo
-
-# ====================================================
-# Modelo: Música (Opciones predefinidas)
-# ====================================================
-class Musica(models.Model):
-    _name = 'restaurante.musica'
-    _description = 'Opciones de Música'
-
-    name = fields.Char(string="Tipo de Música", required=True)
-    price = fields.Float(string="Precio", required=True, readonly=True)  # Precio fijo
-
-# ====================================================
-# Modelo: Decoración (Opciones predefinidas)
-# ====================================================
-class Decoracion(models.Model):
-    _name = 'restaurante.decoracion'
-    _description = 'Opciones de Decoración'
-
-    name = fields.Char(string="Tipo de Decoración", required=True)
-    price = fields.Float(string="Precio", required=True, readonly=True)  # Precio fijo
 
 # ====================================================
 # Modelo: Evento (Modificado)
@@ -235,6 +207,8 @@ class Evento(models.Model):
     budget = fields.Float(string='Presupuesto Estimado', compute='_compute_budget', store=True)
     # Relación con los invitados
     invitado_ids = fields.One2many("restaurante.invitado", "evento_id", string="Lista de Invitados")
+    # Relación con servicio
+    servicio_ids = fields.Many2many('restaurante.servicio', string="Servicios")
 
     # ==============================
     # Nuevos campos para Menús Especiales
@@ -245,10 +219,6 @@ class Evento(models.Model):
     lactose_free_menu = fields.Integer(string="Menú Sin Lactosa", default=0)
     kids_menu = fields.Integer(string="Menú Infantil", default=0)
 
-    # Selección de múltiples opciones
-    iluminacion_ids = fields.Many2many('restaurante.iluminacion', string="Iluminación")
-    musica_ids = fields.Many2many('restaurante.musica', string="Música")
-    decoracion_ids = fields.Many2many('restaurante.decoracion', string="Decoración")
 
     # Relación con la reserva
     reserva_id = fields.Many2one('restaurante.reserva', string="Reserva", required=True)
@@ -287,7 +257,7 @@ class Evento(models.Model):
             if rec.reserva_id and rec.special_menu_total > rec.reserva_id.numero_personas:
                 raise ValidationError("La suma de los menús especiales no puede ser mayor que el número de personas en la reserva.")
 
-    @api.depends('servicio_menu_ids', 'iluminacion_ids', 'musica_ids', 'decoracion_ids',
+    @api.depends('servicio_menu_ids', 'servicio_ids',
              'entrantes_ids', 'primer_plato_id', 'segundo_plato_id', 'postre_id',
              'reserva_id.numero_personas', 'vegan_menu', 'vegetarian_menu', 'gluten_free_menu', 'lactose_free_menu', 'kids_menu')
     def _compute_budget(self):
@@ -300,9 +270,7 @@ class Evento(models.Model):
         """
         for event in self:
             total = sum(servicio.precio for servicio in event.servicio_menu_ids)
-            total += sum(iluminacion.price for iluminacion in event.iluminacion_ids)
-            total += sum(musica.price for musica in event.musica_ids)
-            total += sum(decoracion.price for decoracion in event.decoracion_ids)
+            total += sum(servicio.price for servicio in event.servicio_ids)
 
             # Calcular costo de entrantes por número de personas ajustado
             if event.reserva_id and event.entrantes_ids:
@@ -335,6 +303,21 @@ class Evento(models.Model):
 
     def action_generate_actividad_report(self):
         return self.env.ref('gestion_eventos_restaurante.actividad_evento_report').report_action(self)
+    
+# ====================================================
+# Modelo: Servicio personalizado
+# ====================================================
+class Servicio(models.Model):
+    _name = 'restaurante.servicio'
+    _description = 'Servicios del Evento'
+
+    name = fields.Char(string="Servicio", required=True)
+    tipo = fields.Selection([
+        ('iluminacion', 'Iluminación'),
+        ('musica', 'Música'),
+        ('decoracion', 'Decoración'),
+    ], string="Tipo de Servicio", required=True)
+    price = fields.Float(string="Precio", required=True, readonly=True)  # Precio fijo
 
 # ====================================================
 # Modelo: Servicio y Menú
@@ -449,18 +432,32 @@ class Pago(models.Model):
         ('completado', 'Completado'),
         ('pendiente', 'Pendiente')
     ], string="Estado del Pago", default='pendiente', required=True)
-    
-    # Relación con la reserva
+
     reserva_id = fields.Many2one('restaurante.reserva', string="Reserva", required=True)
-    
-    # Relación con las facturas (en caso de pagos parciales o múltiples facturaciones)
-    factura_ids = fields.One2many('restaurante.factura', 'pago_id', string="Facturas")
-    
-    @api.constrains('monto')
-    def _check_monto(self):
-        for pago in self:
-            if pago.monto <= 0:
-                raise ValidationError("El monto del pago debe ser mayor a cero.")
+
+    numero_factura = fields.Char(string="Número de Factura", readonly=True)
+    factura_generada = fields.Boolean(string="Factura Generada", default=False)
+
+    def action_generar_imprimir_factura(self):
+        self.ensure_one()
+
+        if self.estado_pago != 'completado':
+            raise UserError("No se puede generar la factura porque el pago aún no está completado.")
+
+        # Si no hay factura, crearla y asignar el número al pago
+        factura = self.env['restaurante.factura'].search([('pago_id', '=', self.id)], limit=1)
+        if not factura:
+            factura = self.env['restaurante.factura'].create({
+                'numero_factura': f"FACT-{self.id:05d}",
+                'fecha_emision': self.fecha_pago,
+                'total': self.monto,
+                'pago_id': self.id,
+            })
+            self.numero_factura = factura.numero_factura
+            self.factura_generada = True  # Marcamos que la factura fue generada
+
+        # Generar el informe PDF sobre `Pago`
+        return self.env.ref('gestion_eventos_restaurante.action_report_factura').report_action(self)
 
 # ====================================================
 # Modelo: Factura
@@ -469,13 +466,15 @@ class Factura(models.Model):
     _name = 'restaurante.factura'
     _description = 'Factura generada a partir de un pago'
 
-    numero_factura = fields.Char(string="Número de Factura", required=True)
+    numero_factura = fields.Char(string="Número de Factura", required=True, readonly=True, copy=False, default='Nuevo')
     fecha_emision = fields.Date(string="Fecha de Emisión", default=fields.Date.context_today, required=True)
     total = fields.Float(string="Total", required=True)
-    detalles = fields.Text(string="Detalles")
     
-    # Relación con el pago
     pago_id = fields.Many2one('restaurante.pago', string="Pago", required=True)
+
+    def action_imprimir_factura(self):
+        """Genera el informe PDF de la factura"""
+        return self.env.ref('gestion_eventos_restaurante.action_report_factura').report_action(self)
 
 # ====================================================
 # Modelo: Invitados
