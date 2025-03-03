@@ -103,14 +103,24 @@ class Reserva(models.Model):
 
     @api.depends('fecha_reserva')
     def _compute_color_disponibilidad(self):
-        reservas = self.env['restaurante.reserva'].search([])
-        fechas_ocupadas = reservas.mapped('fecha_reserva')
+        """Define el color según la disponibilidad de la fecha"""
+        fechas_ocupadas = self.env['restaurante.reserva'].search([]).mapped('fecha_reserva')
 
         for record in self:
-            if record.fecha_reserva in fechas_ocupadas:
-                record.color_disponibilidad = 1  # Rojo (ocupado)
-            else:
-                record.color_disponibilidad = 10  # Verde (disponible)
+           record.color_disponibilidad = 1 if record.fecha_reserva in fechas_ocupadas else 10
+
+    
+
+    @api.constrains('fecha_reserva')
+    def _check_fecha_unica(self):
+        """Evita que se creen reservas con la misma fecha"""
+        for reserva in self:
+            existe = self.env['restaurante.reserva'].search([
+                ('fecha_reserva', '=', reserva.fecha_reserva),
+                ('id', '!=', reserva.id)  # Evita conflicto al editar
+            ])
+            if existe:
+                raise ValidationError("Ya existe una reserva para esta fecha. Por favor, elige otra.")
     
     def action_send_confirmation(self):
         """Método que se ejecuta al hacer clic en el botón para enviar el correo"""
@@ -134,6 +144,18 @@ class Reserva(models.Model):
                 'type': 'rainbow_man',
             }
         }
+    
+    def action_ver_calendario(self):
+        """Abre la vista de calendario para ver las reservas con colores"""
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Calendario de Reservas',
+            'view_mode': 'calendar',
+            'res_model': 'restaurante.reserva',
+            'view_id': self.env.ref('gestion_eventos_restaurante.view_reserva_calendar').id,
+            'target': 'new',
+        }
+
         
     # @api.model
     # def create(self, vals):
@@ -239,7 +261,7 @@ class Evento(models.Model):
     # Relación con los platos del menú
     entrantes_ids = fields.Many2many('restaurante.plato', string="Entrantes", domain=[('tipo_plato', '=', 'entrante')])
     primer_plato_id = fields.Many2one('restaurante.plato', string="Primer Plato", domain=[('tipo_plato', '=', 'principal')])
-    segundo_plato_id = fields.Many2one('restaurante.plato', string="Segundo Plato", domain=[('tipo_plato', '=', 'principal')])
+    segundo_plato_id = fields.Many2one('restaurante.plato', string="Segundo Plato", domain=[('tipo_plato', '=', 'secundario')])
     postre_id = fields.Many2one('restaurante.plato', string="Postre", domain=[('tipo_plato', '=', 'postre')])
     
     special_menu_total = fields.Integer(
@@ -266,7 +288,7 @@ class Evento(models.Model):
                 raise ValidationError("La suma de los menús especiales no puede ser mayor que el número de personas en la reserva.")
 
     @api.depends('servicio_menu_ids', 'iluminacion_ids', 'musica_ids', 'decoracion_ids',
-             'entrantes_ids', 'primer_plato_id', 'segundo_plato_id', 'postre_id', 
+             'entrantes_ids', 'primer_plato_id', 'segundo_plato_id', 'postre_id',
              'reserva_id.numero_personas', 'vegan_menu', 'vegetarian_menu', 'gluten_free_menu', 'lactose_free_menu', 'kids_menu')
     def _compute_budget(self):
         """Calcula el presupuesto total del evento incluyendo:
@@ -274,6 +296,7 @@ class Evento(models.Model):
         - Iluminación, Música y Decoración
         - Entrantes ajustados por número de personas
         - Platos principales multiplicados por invitados menos menús especiales
+        - Costos de menús especiales
         """
         for event in self:
             total = sum(servicio.precio for servicio in event.servicio_menu_ids)
@@ -300,7 +323,12 @@ class Evento(models.Model):
             if event.postre_id:
                 total += event.postre_id.precio * personas_restantes
 
+            # **Añadir costos de menús especiales**
+            total += (event.vegan_menu + event.vegetarian_menu + event.gluten_free_menu + event.lactose_free_menu) * 20
+            total += event.kids_menu * 15
+
             event.budget = total
+
 
     def print_evento_report(self):
             return self.env.ref('gestion_eventos_restaurante.action_report_evento').report_action(self)

@@ -2,6 +2,7 @@
 <odoo>
     <!-- Menú principal -->
     <menuitem id="menu_restaurante_root" name="Gestión de Eventos" sequence="1" />
+    <menuitem id="calendario_root" name="Calendario" parent="menu_restaurante_root" action="action_reserva_calendar"/>
 
     <!-- Submenús -->
     <menuitem id="menu_reservas" name="Reservas" parent="menu_restaurante_root" action="action_reservas"/>
@@ -98,7 +99,7 @@
                     <notebook>
                         <page string="Información General">
                             <group>
-                                <field name="fecha_reserva" />
+                                <field name="fecha_reserva"/>
                                 <field name="tipo_evento" />
                                 <field name="numero_personas" />
                                 <field name="cliente_id" />
@@ -128,14 +129,25 @@
     </record>
 
     <record id="view_evento_list" model="ir.ui.view">
-    <field name="name">restaurante.evento.list</field>
-    <field name="model">restaurante.evento</field>
-    <field name="arch" type="xml">
-        <list>
-            <field name="tipo_evento"/>
-        </list>
-    </field>
-</record>
+        <field name="name">restaurante.evento.list</field>
+        <field name="model">restaurante.evento</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="tipo_evento"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vista calendar para mostrar los colores-->
+    <record id="action_reserva_calendar" model="ir.actions.act_window">
+        <field name="name">Calendario de Reservas</field>
+        <field name="res_model">restaurante.reserva</field>
+        <field name="view_mode">calendar</field>
+        <field name="view_id" ref="view_reserva_calendar"/>
+        <field name="target">new</field>
+    </record>
+
+
 
     <!-- Vista de Formulario para Eventos -->
     <record id="view_evento_form" model="ir.ui.view">
