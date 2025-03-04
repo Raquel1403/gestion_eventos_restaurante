@@ -97,36 +97,24 @@
                         </tr>
                     </table>
 
-                    <h3>Servicios y Personalización</h3>
-                    <table class="table table-bordered">
-                        <tr>
-                            <th>Iluminación</th>
-                            <td>
-                                <t t-foreach="doc.iluminacion_ids" t-as="iluminacion">
-                                    <span t-field="iluminacion.name" />
-                                    <br />
-                                </t>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Música</th>
-                            <td>
-                                <t t-foreach="doc.musica_ids" t-as="musica">
-                                    <span t-field="musica.name" />
-                                    <br />
-                                </t>
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Decoración</th>
-                            <td>
-                                <t t-foreach="doc.decoracion_ids" t-as="decoracion">
-                                    <span t-field="decoracion.name" />
-                                    <br />
-                                </t>
-                            </td>
-                        </tr>
-                    </table>
+                        <h3>Servicios y Personalización</h3>
+    <table class="table table-bordered">
+        <tr>
+            <th>Tipo</th>
+            <th>Precio</th>
+        </tr>
+        <t t-foreach="doc.servicio_ids" t-as="servicio">
+            <tr>
+                <td>
+                <span t-field="servicio.tipo" />
+                </td>
+                <td>
+                <span t-field="servicio.price" />
+                </td>
+            </tr>
+        </t>
+    </table>
+
 
                     <h3>Actividades</h3>
                     <table class="table table-bordered">

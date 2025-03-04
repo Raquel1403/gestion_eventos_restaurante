@@ -41,7 +41,7 @@
     'assets': {},
     'application': True,
     'installable': True,
-    'icon': '/restaurante/static/catering_icono.jpg',
+    'icon': '/restaurante/static/catering.jpg',
     # only loaded in demonstration mode
     'demo': [
         'demo/demo.xml',

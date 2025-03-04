@@ -186,5 +186,17 @@
             <field name="numero_personas">20</field>
         </record>
 
+
+        <!-- 12. Accesos (ir.model.access) -->
+        <record id="access_restaurante_actividad_demo" model="ir.model.access">
+            <field name="name">access_restaurante_actividad_demo</field>
+            <field name="model_id" ref="model_restaurante_actividad"/>
+            <field name="group_id" ref="base.group_user"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_write" eval="1"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+        </record>
+
     </data>
 </odoo>
